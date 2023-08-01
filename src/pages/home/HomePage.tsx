@@ -11,6 +11,7 @@ function HomePage() {
     const [filteredCollections, setFilteredCollections] = useState<Collection[]>();
     const [currentCollection, setCurrentCollection] = useState<Collection>();
     const [results, setResults] = useState<any[]>();
+    const [db, setDb] = useState<any>();
 
     useEffect(() => {
         if (!collections) {
@@ -20,19 +21,21 @@ function HomePage() {
             });
         }
 
+        const connection = getConnection();
+        const db = DatabaseManager.get(connection.name);
+        setDb(db);
+        setPassword(connection.password);
+
     }, [collections]);
 
     async function getModels(collection: Collection) {
         const collectionName = collection.id;
-        const connection = getConnection();
-        const db = DatabaseManager.get(connection.name);
         const query = {
             _id: { $regex: `^${collectionName}`, },
         };
         const output = await db.find({
             selector: query,
         });
-        setPassword(connection.password);
         const result = output.docs.map((item: any) => {
             return { id: item._id, rev: item._rev, ...decrypt(item.payload), };
         })
