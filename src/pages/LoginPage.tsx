@@ -20,9 +20,9 @@ function LoginPage() {
         setEnvironement('browser');
     })
 
-    return <div className="w-screen h-screen flex justify-center items-center bg-slate-100">
-        <div className="w-full sm:w-full md:w-1/4 lg:1/3 h-[600px] rounded-lg bg-white p-4">
-            <div className="font-bold text-xl">Poker Login</div>
+    return <div className="w-screen h-screen flex justify-center items-center bg-slate-100 dark:bg-slate-900">
+        <div className="w-full sm:w-full md:w-1/4 lg:1/3 h-[600px] rounded-lg bg-white dark:bg-slate-800 p-4">
+            <div className="font-bold text-xl dark:text-white">Poker Login</div>
             <div className="h-6"></div>
             <Input
                 label="Name"

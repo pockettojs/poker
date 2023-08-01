@@ -84,9 +84,14 @@ function HomePage() {
                 </div>
             </div>
             <div className="w-3/4 overflow-x-auto bg-white dark:bg-slate-800 shadow-sm rounded-lg p-4 mb-4">
+                {
+                    !results && <div className="w-full h-full flex justify-center items-center">
+                        <div className="text-slate-600 dark:text-white">Please select a collection</div>
+                    </div>
+                }
                 <div className="w-full h-16">
                     <div className="absolute">
-                        <div className="p-2 pb-8 text-2xl">{currentCollection?.id || ''}</div>
+                        <div className="p-2 pb-8 text-2xl dark:text-white">{currentCollection?.id || ''}</div>
                     </div>
                     <div className="overflow-x-auto">
                         <div className="mt-[48px]" style={{
@@ -94,14 +99,14 @@ function HomePage() {
                         }}>
                             <table>
                                 {
-                                    Object.keys(results?.[0]).map((key) => {
+                                    results && Object.keys(results?.[0]).map((key) => {
                                         return <th>
                                             <td className="px-2 pb-2 text-slate-900 dark:text-white">{formatKey(key)}</td>
                                         </th>
                                     })
                                 }
                                 {
-                                    results?.map((item) => {
+                                    results && results?.map((item) => {
                                         return <tr>
                                             {
                                                 Object.keys(item).map((key) => {
