@@ -11,6 +11,7 @@ function HomePage() {
     const [filteredCollections, setFilteredCollections] = useState<Collection[]>();
     const [currentCollection, setCurrentCollection] = useState<Collection>();
     const [results, setResults] = useState<any[]>();
+    const [filteredResults, setFilteredResults] = useState<any[]>();
     const [db, setDb] = useState<any>();
 
     useEffect(() => {
@@ -40,6 +41,7 @@ function HomePage() {
             return { id: item._id, rev: item._rev, ...decrypt(item.payload), };
         })
         setResults(result);
+        setFilteredResults(result);
     }
 
     function formatKey(key: string) {
@@ -79,7 +81,7 @@ function HomePage() {
                 <div className="h-4"></div>
                 <div className="text-sm ml-2 space-y-2">
                     {
-                        filteredCollections?.map((item) => {
+                        filteredCollections && filteredCollections.map((item) => {
                             return <div
                                 key={item.id}
                                 className="w-full cursor-pointer"
@@ -96,7 +98,7 @@ function HomePage() {
             </div>
             <div className="w-3/4 overflow-x-auto bg-white dark:bg-slate-800 shadow-sm rounded-lg p-4 mb-4">
                 {
-                    !results && <div className="w-full h-full flex justify-center items-center">
+                    !filteredResults && <div className="w-full h-full flex justify-center items-center">
                         <div className="text-slate-600 dark:text-white">Please select a collection</div>
                     </div>
                 }
@@ -108,30 +110,49 @@ function HomePage() {
                         <div className="mt-[48px]" style={{
                             height: 'calc(100vh - 48px)',
                         }}>
-                            <table>
-                                {
-                                    results && Object.keys(results?.[0]).map((key) => {
-                                        return <th>
-                                            <td className="px-2 pb-2 text-slate-900 dark:text-white">{formatKey(key)}</td>
-                                        </th>
-                                    })
-                                }
-                                {
-                                    results && results?.map((item) => {
-                                        return <tr>
-                                            {
-                                                Object.keys(item).map((key) => {
-                                                    return <td className="px-2 pb-2 text-slate-900 text-xs dark:text-white">{formatValue(key, item[key])}</td>
-                                                })
-                                            }
-                                        </tr>
-                                    })
-                                }
-                            </table>
+                            {
+                                filteredResults ? <table>
+                                    <tr>
+                                        {
+                                            filteredResults ? Object.keys(results?.[0] || {}).map((key) => {
+                                                return <th className="px-2 pb-2 text-slate-900 dark:text-white">{formatKey(key)}</th>
+                                            }) : <></>
+                                        }
+                                    </tr>
+                                    <tr>
+                                        {
+                                            filteredResults ? Object.keys(results?.[0] || {}).map((key) => {
+                                                return <td className="">
+                                                    <input
+                                                        className="h-6 w-full px-2 text-xs rounded-full dark:bg-slate-300 dark:placeholder:text-slate-500 shadow-sm focus:outline-none focus:border-blue-500 bg-slate-50"
+                                                        placeholder={formatKey(key)}
+                                                        onChange={(e) => {
+                                                            const filtered = results?.filter((item) => {
+                                                                return formatValue(key, item[key]).toLowerCase().includes(e.target.value.toLowerCase());
+                                                            });
+                                                            console.log('filtered: ', filtered);
+                                                            setFilteredResults(filtered || []);
+                                                        }}
+                                                    />
+                                                </td>
+                                            }) : <></>
+                                        }
+                                    </tr>
+                                    {
+                                        filteredResults ? filteredResults?.map((item) => {
+                                            return <tr>
+                                                {
+                                                    Object.keys(item).map((key) => {
+                                                        return <td className="px-2 pb-2 text-slate-900 text-xs dark:text-white">{formatValue(key, item[key])}</td>
+                                                    })
+                                                }
+                                            </tr>
+                                        }) : <></>
+                                    }
+                                </table> : <></>
+                            }
                         </div>
-
                     </div>
-
                 </div>
             </div>
         </div>
