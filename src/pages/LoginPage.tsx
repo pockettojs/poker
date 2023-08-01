@@ -1,8 +1,8 @@
-import { DatabaseManager, PouchDBConfig } from "pocket";
-import { useState } from "react";
+import { DatabaseManager, PouchDBConfig, setEnvironement } from "pocket";
+import { useEffect, useState } from "react";
 import Button from "src/components/Button";
 import Input from "src/components/Input";
-import { setConnection } from "src/flow/login.flow";
+import { saveConnection, setConnection } from "src/flow/login.flow";
 import { Connection } from "src/models/Connection";
 
 function LoginPage() {
@@ -12,6 +12,10 @@ function LoginPage() {
     const [database, setDatabase] = useState("")
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
+
+    useEffect(() => {
+        setEnvironement('browser');
+    })
 
     return <div className="w-screen h-screen flex justify-center items-center bg-slate-200">
         <div className="w-full sm:w-full md:w-1/4 lg:1/3 h-[600px] rounded-lg bg-white p-4">
@@ -60,7 +64,9 @@ function LoginPage() {
             />
             <div className="h-8"></div>
             <div className="grid grid-cols-3 gap-4">
-                <Button type="outline" color="red">Save</Button>
+                <Button type="outline" color="red" onClick={async () => {
+                    await saveConnection();
+                }}>Save</Button>
                 <Button type="outline" color="green">Connect</Button>
                 <Button type="outline" color="blue" onClick={async () => {
                     const connection = new Connection()
@@ -71,13 +77,16 @@ function LoginPage() {
                     connection.username = username
                     connection.password = password
                     setConnection(connection)
-                    const url = `http://${host}${port === '80' ? '' : ':' + port}`
+                    const url = `http://${username}:${password}@${host}${port === '80' ? '' : ':' + port}/${database}`
                     const config = {} as PouchDBConfig;
                     if (username && password) {
                         config.auth = {
                             username,
                             password
                         };
+                    }
+                    if (name) {
+                        config.dbName = name;
                     }
                     if (password) {
                         config.password = password;

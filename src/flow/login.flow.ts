@@ -7,3 +7,7 @@ export function setConnection(connection: Connection) {
 export function getConnection() {
     return tempConnection;
 }
+
+export async function saveConnection() {
+    await tempConnection.save();
+}
