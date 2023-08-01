@@ -1,4 +1,4 @@
-import { DatabaseManager, Model } from "pocket";
+import { DatabaseManager } from "pocket";
 import { useEffect, useState } from "react";
 import { getCollections } from "src/flow/collection.flow";
 import { getConnection } from "src/flow/login.flow";
