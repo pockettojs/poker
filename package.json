@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@ricons/fluent": "^0.12.0",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -10,6 +11,8 @@
     "@types/node": "^16.18.39",
     "@types/react": "^18.2.18",
     "@types/react-dom": "^18.2.7",
+    "os-browserify": "^0.3.0",
+    "pocket": "file:pocket-0.3.1.tgz",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
@@ -17,10 +20,11 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "cross-env NODE_ENV=dev GENERATE_SOURCEMAP=false react-app-rewired start",
+    "start:https": "cross-env HTTPS=true NODE_ENV=dev GENERATE_SOURCEMAP=false react-app-rewired start",
+    "build": "cross-env BUILD_PATH='./dist' NODE_ENV=prod react-app-rewired build",
+    "test": "GENERATE_SOURCEMAP=false react-app-rewired test",
+    "eject": "GENERATE_SOURCEMAP=false react-app-rewired eject"
   },
   "eslintConfig": {
     "extends": [
@@ -39,5 +43,15 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "cross-env": "^7.0.3",
+    "https-browserify": "^1.0.0",
+    "process": "^0.11.10",
+    "react-app-rewired": "^2.2.1",
+    "stream-browserify": "^3.0.0",
+    "stream-http": "^3.2.0",
+    "tailwindcss": "^3.3.3"
   }
 }
