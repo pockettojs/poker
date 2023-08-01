@@ -1,6 +1,9 @@
+import { DatabaseManager, PouchDBConfig } from "pocket";
 import { useState } from "react";
 import Button from "src/components/Button";
 import Input from "src/components/Input";
+import { setConnection } from "src/flow/login.flow";
+import { Connection } from "src/models/Connection";
 
 function LoginPage() {
     const [name, setName] = useState("")
@@ -55,11 +58,33 @@ function LoginPage() {
                 value={password}
                 onChange={(text) => setPassword(text)}
             />
-            <div className="h-4"></div>
+            <div className="h-8"></div>
             <div className="grid grid-cols-3 gap-4">
                 <Button type="outline" color="red">Save</Button>
                 <Button type="outline" color="green">Connect</Button>
-                <Button type="outline" color="blue">Login</Button>
+                <Button type="outline" color="blue" onClick={async () => {
+                    const connection = new Connection()
+                    connection.name = name
+                    connection.host = host
+                    connection.port = port
+                    connection.database = database
+                    connection.username = username
+                    connection.password = password
+                    setConnection(connection)
+                    const url = `http://${host}${port === '80' ? '' : ':' + port}`
+                    const config = {} as PouchDBConfig;
+                    if (username && password) {
+                        config.auth = {
+                            username,
+                            password
+                        };
+                    }
+                    if (password) {
+                        config.password = password;
+                    }
+                    const db = await DatabaseManager.connect(url, config);
+                    console.log('db: ', db);
+                }}>Login</Button>
             </div>
         </div>
     </div>;
