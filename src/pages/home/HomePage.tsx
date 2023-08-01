@@ -58,7 +58,7 @@ function HomePage() {
         if (key === 'id') {
             return value.split('.')[1];
         }
-        return value;
+        return String(value);
     }
 
     return (
