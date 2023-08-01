@@ -8,6 +8,7 @@ import { Collection } from "src/models/Collection";
 function HomePage() {
     const [searchText, setSearchText] = useState("");
     const [collections, setCollections] = useState<Collection[]>();
+    const [filteredCollections, setFilteredCollections] = useState<Collection[]>();
     const [currentCollection, setCurrentCollection] = useState<Collection>();
     const [results, setResults] = useState<any[]>();
 
@@ -15,6 +16,7 @@ function HomePage() {
         if (!collections) {
             getCollections(query => query.orderBy('id', 'asc')).then((collections) => {
                 setCollections(collections);
+                setFilteredCollections(collections);
             });
         }
 
@@ -63,12 +65,18 @@ function HomePage() {
                     className="w-full h-8 px-4 text-sm rounded-full dark:bg-slate-300 dark:placeholder:text-slate-500 shadow-sm focus:outline-none focus:border-blue-500"
                     placeholder="Search Collection"
                     value={searchText}
-                    onChange={(e) => setSearchText(e.target.value)}
+                    onChange={(e) => {
+                        setSearchText(e.target.value);
+                        const filtered = collections?.filter((item) => {
+                            return item.id.toLowerCase().includes(e.target.value.toLowerCase());
+                        });
+                        setFilteredCollections(filtered);
+                    }}
                 />
                 <div className="h-4"></div>
                 <div className="text-sm ml-2 space-y-2">
                     {
-                        collections?.map((item) => {
+                        filteredCollections?.map((item) => {
                             return <div
                                 key={item.id}
                                 className="w-full cursor-pointer"
