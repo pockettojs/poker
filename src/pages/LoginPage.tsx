@@ -1,5 +1,6 @@
-import { DatabaseManager, PouchDBConfig, setEnvironement } from "pocket";
+import { DatabaseManager, PouchDBConfig, setDefaultDbName, setEnvironement } from "pocket";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Button from "src/components/Button";
 import Input from "src/components/Input";
 import { saveConnection, setConnection } from "src/flow/login.flow";
@@ -13,11 +14,13 @@ function LoginPage() {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
 
+    const navigate = useNavigate();
+
     useEffect(() => {
         setEnvironement('browser');
     })
 
-    return <div className="w-screen h-screen flex justify-center items-center bg-slate-200">
+    return <div className="w-screen h-screen flex justify-center items-center bg-slate-100">
         <div className="w-full sm:w-full md:w-1/4 lg:1/3 h-[600px] rounded-lg bg-white p-4">
             <div className="font-bold text-xl">Poker Login</div>
             <div className="h-6"></div>
@@ -65,6 +68,7 @@ function LoginPage() {
             <div className="h-8"></div>
             <div className="grid grid-cols-3 gap-4">
                 <Button type="outline" color="red" onClick={async () => {
+                    setDefaultDbName(name);
                     await saveConnection();
                 }}>Save</Button>
                 <Button type="outline" color="green">Connect</Button>
@@ -91,8 +95,10 @@ function LoginPage() {
                     if (password) {
                         config.password = password;
                     }
-                    const db = await DatabaseManager.connect(url, config);
-                    console.log('db: ', db);
+                    console.log('config: ', config);
+                    await DatabaseManager.connect(url, config);
+                    setDefaultDbName(name);
+                    navigate('/home');
                 }}>Login</Button>
             </div>
         </div>
