@@ -22,7 +22,7 @@ function HomePage() {
 
     useEffect(() => {
         if (!collections) {
-            getCollections(query => query.orderBy('id', 'asc')).then((collections) => {
+            getCollections(query => query.orderBy('createdAt', 'desc')).then((collections) => {
                 setCollections(collections);
                 setFilteredCollections(collections);
             });
