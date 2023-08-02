@@ -153,7 +153,6 @@ function HomePage() {
                                                                 const filtered = results?.filter((item) => {
                                                                     return formatValue(key, item[key]).toLowerCase().includes(e.target.value.toLowerCase());
                                                                 });
-                                                                console.log('filtered: ', filtered);
                                                                 setFilteredResults(filtered || []);
                                                             }}
                                                         />

@@ -9,7 +9,6 @@ export function getConnection() {
 }
 
 export async function updateConnection(connection: Connection) {
-    console.log(connection);
     await connection.save();
 }
 

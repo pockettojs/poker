@@ -52,7 +52,6 @@ function LoginPage() {
         const http = host.startsWith('https://') ? 'https://' : 'http://';
         const hostWithoutProtocol = host.startsWith('http://') ? host.substring(7) : (host.startsWith('https://') ? host.substring(8) : host);
         const url = `${http}${username}:${password}@${hostWithoutProtocol}${port === '80' ? '' : ':' + port}/${database}`
-        console.log('url: ', url);
         const config = {} as PouchDBConfig;
         if (username && password) {
             config.auth = {
@@ -66,6 +65,7 @@ function LoginPage() {
         if (password) {
             config.password = password;
         }
+        config.silentConnect = true;
         const db = await DatabaseManager.connect(url, config);
         setEncryptionPassword(password)
         setDefaultDbName(name);
