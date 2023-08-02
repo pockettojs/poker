@@ -77,7 +77,7 @@ function LoginPage() {
             showAlert && alert
         }
         <div className="w-screen h-screen flex justify-center items-center bg-slate-100 dark:bg-slate-900">
-            <div className="w-full sm:w-full md:w-1/2 lg:w-1/3 h-[650px] rounded-lg bg-white dark:bg-slate-800 p-4">
+            <div className="w-full sm:w-full md:w-1/2 lg:w-1/3 h-[660px] rounded-lg bg-white dark:bg-slate-800 p-4">
                 <div className="font-bold text-xl dark:text-white">Poker Login</div>
                 <div className="h-6"></div>
                 <Input
@@ -134,7 +134,7 @@ function LoginPage() {
                             connections && connections.map((connection, index) => {
                                 return <div
                                     key={index}
-                                    className="relative z-10 cursor-pointer flex-none w-24 h-[40px] rounded-md border-slate-300  border shadow-md pl-2"
+                                    className="relative z-10 cursor-pointer flex-none w-40 h-[50px] rounded-md border-slate-300  border shadow-md pl-2"
                                     onClick={() => {
                                         setName(connection.name)
                                         setHost(connection.host)

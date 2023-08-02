@@ -80,6 +80,15 @@ function HomePage() {
         }
         return String(value);
     }
+    function getWidth(key: string) {
+        if (key === 'rev') {
+            return 'w-10';
+        }
+        if (key === 'id') {
+            return 'w-20';
+        }
+        return 'w-30';
+    }
 
     return (
         <div className="w-screen h-screen bg-slate-100 dark:bg-slate-900 flex">
@@ -87,9 +96,9 @@ function HomePage() {
                 showAlert && alert
             }
             <div className="w-1/6 p-4">
-                <div className="ml-2 mb-4">{connection?.name || ''}</div>
+                <div className="ml-2 mb-4 dark:text-white font-bold">{connection?.name || ''}</div>
                 <input
-                    className="w-full h-8 px-4 text-sm rounded-full dark:bg-slate-300 dark:placeholder:text-slate-500 shadow-sm focus:outline-none focus:border-blue-500"
+                    className="w-full h-8 px-4 text-sm rounded-full dark:bg-slate-600 dark:placeholder:text-slate-500 shadow-sm focus:outline-none focus:border-blue-500"
                     placeholder="Search Collection"
                     value={searchText}
                     onChange={(e) => {
@@ -145,9 +154,9 @@ function HomePage() {
                                         <tr>
                                             {
                                                 filteredResults ? Object.keys(results?.[0] || {}).map((key, index) => {
-                                                    return <td key={index}>
+                                                    return <td key={index} className={"pl-1 " + getWidth(key)}>
                                                         <input
-                                                            className="h-6 w-full px-2 text-xs rounded-full dark:bg-slate-300 dark:placeholder:text-slate-500 shadow-sm focus:outline-none focus:border-blue-500 bg-slate-50"
+                                                            className="h-6 px-2 w-full text-xs rounded-full dark:bg-slate-600 dark:placeholder:text-slate-400 shadow-sm focus:outline-none focus:border-blue-500 bg-slate-50"
                                                             placeholder={formatKey(key)}
                                                             onChange={(e) => {
                                                                 const filtered = results?.filter((item) => {
