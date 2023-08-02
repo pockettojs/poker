@@ -86,7 +86,7 @@ function HomePage() {
         }
         return String(value);
     }
-    function getWidth(key: string) {
+    function getWidth() {
         return 'w-10';
     }
 
@@ -154,7 +154,7 @@ function HomePage() {
                                         <tr>
                                             {
                                                 filteredResults ? Object.keys(results?.[0] || {}).map((key, index) => {
-                                                    return <td key={index} className={"pl-1 pb-2 " + getWidth(key)}>
+                                                    return <td key={index} className={"pl-1 pb-2 " + getWidth()}>
                                                         <input
                                                             className="h-6 px-2 w-full text-xs rounded-full dark:bg-slate-600 dark:placeholder:text-slate-400 shadow-sm focus:outline-none focus:border-blue-500 bg-slate-100"
                                                             placeholder={formatKey(key)}
