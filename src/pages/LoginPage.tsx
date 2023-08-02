@@ -49,7 +49,10 @@ function LoginPage() {
     }
 
     async function establishConnection() {
-        const url = `http://${username}:${password}@${host}${port === '80' ? '' : ':' + port}/${database}`
+        const http = host.startsWith('https://') ? 'https://' : 'http://';
+        const hostWithoutProtocol = host.startsWith('http://') ? host.substring(7) : (host.startsWith('https://') ? host.substring(8) : host);
+        const url = `${http}${username}:${password}@${hostWithoutProtocol}${port === '80' ? '' : ':' + port}/${database}`
+        console.log('url: ', url);
         const config = {} as PouchDBConfig;
         if (username && password) {
             config.auth = {
@@ -166,6 +169,8 @@ function LoginPage() {
                     <Button type="outline" color="red" onClick={async () => {
                         await updateConnection();
                         await saveConnection();
+                        const connections = await getConnections();
+                        setConnections(connections);
                         setDefaultDbName(name);
                     }}>Save</Button>
                     <Button type="outline" color="green" onClick={async () => {
