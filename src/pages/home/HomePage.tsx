@@ -134,43 +134,47 @@ function HomePage() {
                         }}>
                             {
                                 filteredResults ? <table>
-                                    <tr>
+                                    <thead>
+                                        <tr>
+                                            {
+                                                filteredResults ? Object.keys(results?.[0] || {}).map((key, index) => {
+                                                    return <th key={index} className="px-2 pb-2 text-slate-900 dark:text-white">{formatKey(key)}</th>
+                                                }) : <></>
+                                            }
+                                        </tr>
+                                        <tr>
+                                            {
+                                                filteredResults ? Object.keys(results?.[0] || {}).map((key, index) => {
+                                                    return <td key={index}>
+                                                        <input
+                                                            className="h-6 w-full px-2 text-xs rounded-full dark:bg-slate-300 dark:placeholder:text-slate-500 shadow-sm focus:outline-none focus:border-blue-500 bg-slate-50"
+                                                            placeholder={formatKey(key)}
+                                                            onChange={(e) => {
+                                                                const filtered = results?.filter((item) => {
+                                                                    return formatValue(key, item[key]).toLowerCase().includes(e.target.value.toLowerCase());
+                                                                });
+                                                                console.log('filtered: ', filtered);
+                                                                setFilteredResults(filtered || []);
+                                                            }}
+                                                        />
+                                                    </td>
+                                                }) : <></>
+                                            }
+                                        </tr>
+                                    </thead>
+                                    <tbody>
                                         {
-                                            filteredResults ? Object.keys(results?.[0] || {}).map((key) => {
-                                                return <th className="px-2 pb-2 text-slate-900 dark:text-white">{formatKey(key)}</th>
+                                            filteredResults ? filteredResults?.map((item, index) => {
+                                                return <tr key={index}>
+                                                    {
+                                                        Object.keys(item).map((key, indexJ) => {
+                                                            return <td key={indexJ} className="px-2 pb-2 text-slate-900 text-xs dark:text-white">{formatValue(key, item[key])}</td>
+                                                        })
+                                                    }
+                                                </tr>
                                             }) : <></>
                                         }
-                                    </tr>
-                                    <tr>
-                                        {
-                                            filteredResults ? Object.keys(results?.[0] || {}).map((key) => {
-                                                return <td className="">
-                                                    <input
-                                                        className="h-6 w-full px-2 text-xs rounded-full dark:bg-slate-300 dark:placeholder:text-slate-500 shadow-sm focus:outline-none focus:border-blue-500 bg-slate-50"
-                                                        placeholder={formatKey(key)}
-                                                        onChange={(e) => {
-                                                            const filtered = results?.filter((item) => {
-                                                                return formatValue(key, item[key]).toLowerCase().includes(e.target.value.toLowerCase());
-                                                            });
-                                                            console.log('filtered: ', filtered);
-                                                            setFilteredResults(filtered || []);
-                                                        }}
-                                                    />
-                                                </td>
-                                            }) : <></>
-                                        }
-                                    </tr>
-                                    {
-                                        filteredResults ? filteredResults?.map((item) => {
-                                            return <tr>
-                                                {
-                                                    Object.keys(item).map((key) => {
-                                                        return <td className="px-2 pb-2 text-slate-900 text-xs dark:text-white">{formatValue(key, item[key])}</td>
-                                                    })
-                                                }
-                                            </tr>
-                                        }) : <></>
-                                    }
+                                    </tbody>
                                 </table> : <></>
                             }
                         </div>
