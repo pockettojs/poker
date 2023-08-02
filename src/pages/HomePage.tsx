@@ -39,7 +39,7 @@ function HomePage() {
                 setFilteredCollections(collections);
             });
         }
-    }, [collections]);
+    }, [collections, navigate]);
 
     async function getModels(collection: Collection) {
         const collectionName = collection.id;
