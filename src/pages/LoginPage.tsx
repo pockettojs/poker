@@ -15,7 +15,7 @@ function LoginPage() {
     const [database, setDatabase] = useState("")
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
-    const [connections, setConnections] = useState<Connection[]>([])
+    const [connections, setConnections] = useState<Connection[]>()
 
     const [alert, setAlert] = useState<any>();
     const [showAlert, setShowAlert] = useState<boolean>(false);
@@ -25,14 +25,16 @@ function LoginPage() {
     useEffect(() => {
         setEnvironement('browser');
 
-        DatabaseManager.connect('default', {
-            dbName: 'default',
-            silentConnect: true,
-        }).then(() => {
-            getConnections().then((connections) => {
-                setConnections(connections)
-            });
-        })
+        if (!connections) {
+            DatabaseManager.connect('default', {
+                dbName: 'default',
+                silentConnect: true,
+            }).then(() => {
+                getConnections().then((connections) => {
+                    setConnections(connections)
+                });
+            })
+        }
     });
 
     async function updateConnection() {
@@ -102,7 +104,7 @@ function LoginPage() {
                 <Input
                     size="sm"
                     label="Database"
-                    placeholder="db"
+                    placeholder="database"
                     value={database}
                     onChange={(text) => setDatabase(text)}
                 />
@@ -126,7 +128,7 @@ function LoginPage() {
                 <div className="container mx-auto">
                     <div className="flex overflow-x-auto gap-4">
                         {
-                            connections.map((connection, index) => {
+                            connections && connections.map((connection, index) => {
                                 return <div
                                     key={index}
                                     className="relative z-10 cursor-pointer flex-none w-24 h-[40px] rounded-md border-slate-300  border shadow-md pl-2"
@@ -142,7 +144,7 @@ function LoginPage() {
                                     }}
                                 >
                                     <div className="font-bold text-sm dark:text-white">{connection.name}</div>
-                                    <div className="text-ellipsis text-xs text-slate-500 dark:text-white">{connection.database.substring(connection.database.length - 8, connection.database.length - 1)}</div>
+                                    <div className="text-ellipsis text-xs text-slate-500 dark:text-white">{(connection.database || '').substring((connection.database || '').length - 8, (connection.database || '').length - 1)}</div>
                                 </div>
                             })
                         }

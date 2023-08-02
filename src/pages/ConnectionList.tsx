@@ -6,7 +6,7 @@ import { deleteConnection, getConnections, saveConnection, setConnection } from 
 import { Connection } from "src/models/Connection";
 
 function ConnectionList() {
-    const [connections, setConnections] = useState<Connection[]>([]);
+    const [connections, setConnections] = useState<Connection[]>();
     const [currentConnection, setCurrentConnection] = useState<Connection>();
 
     const [name, setName] = useState("")
@@ -17,15 +17,17 @@ function ConnectionList() {
     const [password, setPassword] = useState("")
 
     useEffect(() => {
-        DatabaseManager.connect('default', {
-            dbName: 'default',
-            silentConnect: true,
-        }).then(() => {
-            getConnections().then((connections) => {
-                setConnections(connections);
+        if (!connections) {
+            DatabaseManager.connect('default', {
+                dbName: 'default',
+                silentConnect: true,
+            }).then(() => {
+                getConnections().then((connections) => {
+                    setConnections(connections);
+                });
             });
-        });
-    })
+        }
+    }, [connections])
 
     return <div>
         <div className="w-screen h-screen bg-slate-100 dark:bg-slate-900 flex">
@@ -33,7 +35,7 @@ function ConnectionList() {
                 <div className="ml-2 mb-2 text-lg">Connections</div>
                 <div className="ml-2 space-y-2 text-md">
                     {
-                        connections.map((connection) => {
+                        connections && connections.map((connection) => {
                             return <div
                                 key={connection.id}
                                 className="w-full cursor-pointer"
@@ -84,7 +86,7 @@ function ConnectionList() {
                         <Input
                             size="sm"
                             label="Database"
-                            placeholder="db"
+                            placeholder="database"
                             value={database}
                             onChange={(text) => setDatabase(text)}
                         />
@@ -106,11 +108,18 @@ function ConnectionList() {
                         />
                         <div className="h-8"></div>
                         <div className="grid grid-cols-2 gap-4">
-                            <Button color="blue" onClick={() => {
-                                saveConnection();
+                            <Button color="blue" onClick={async () => {
+                                currentConnection.name = name;
+                                currentConnection.host = host;
+                                currentConnection.port = port;
+                                currentConnection.database = database;
+                                currentConnection.username = username;
+                                currentConnection.password = password;
+                                await currentConnection.save();
                             }}>Update</Button>
                             <Button color="red" onClick={() => {
                                 deleteConnection(currentConnection.id);
+                                setCurrentConnection(undefined);
                                 getConnections().then((connections) => {
                                     setConnections(connections);
                                 });
