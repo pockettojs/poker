@@ -2,7 +2,7 @@ import { DatabaseManager } from "pocket";
 import { useEffect, useState } from "react";
 import { getCollections } from "src/flow/collection.flow";
 import { getConnection } from "src/flow/login.flow";
-import { decrypt, setPassword } from "src/helpers/encryption";
+import { decrypt } from "src/helpers/encryption";
 import { Collection } from "src/models/Collection";
 
 function HomePage() {
@@ -25,7 +25,6 @@ function HomePage() {
         const connection = getConnection();
         const db = DatabaseManager.get(connection.name);
         setDb(db);
-        setPassword(connection.password);
 
     }, [collections]);
 

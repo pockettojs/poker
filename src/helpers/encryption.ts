@@ -28,9 +28,9 @@ export const transformer = {
 
 
 export async function setPassword(password: string) {
+    console.log('password: ', password);
     await sodium.ready;
 
-    if (key) return;
     const encoder = new TextEncoder();
     const passwordBytes = encoder.encode(password.padEnd(32, ' '));
     key = passwordBytes.slice(0, sodium.crypto_secretbox_KEYBYTES);
@@ -48,7 +48,9 @@ export function encrypt(data: any): string {
 }
 
 export function decrypt(data: string): any {
+    console.log('data: ', data);
     const ciphertext = sodium.from_base64(data);
+    console.log('key: ', key);
     const decrypted = sodium.crypto_secretbox_open_easy(ciphertext, nonce, key);
     const decoder = new TextDecoder('utf-8');
     const decryptedString = decoder.decode(decrypted);

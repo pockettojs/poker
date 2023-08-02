@@ -5,6 +5,7 @@ import Button from "src/components/Button";
 import Input from "src/components/Input";
 import { getConnections, saveConnection, setConnection } from "src/flow/login.flow";
 import { Connection } from "src/models/Connection";
+import { setPassword as setEncryptionPassword } from 'src/helpers/encryption';
 
 function LoginPage() {
     const [name, setName] = useState("")
@@ -42,7 +43,7 @@ function LoginPage() {
     }
 
     return <div className="w-screen h-screen flex justify-center items-center bg-slate-100 dark:bg-slate-900">
-        <div className="w-full sm:w-full md:w-1/4 lg:1/3 h-[600px] rounded-lg bg-white dark:bg-slate-800 p-4">
+        <div className="w-full sm:w-full md:w-1/4 lg:1/3 h-[620px] rounded-lg bg-white dark:bg-slate-800 p-4">
             <div className="font-bold text-xl dark:text-white">Poker Login</div>
             <div className="h-6"></div>
             <Input
@@ -99,7 +100,7 @@ function LoginPage() {
                         connections.map((connection, index) => {
                             return <div
                                 key={index}
-                                className="cursor-pointer flex-none w-24 h-[60px] rounded-md bg-[#fcba03] text-white shadow-md pl-2"
+                                className="cursor-pointer flex-none w-24 h-[40px] rounded-md border-slate-300  border shadow-md pl-2"
                                 onClick={() => {
                                     setName(connection.name)
                                     setHost(connection.host)
@@ -111,12 +112,15 @@ function LoginPage() {
                                     setPassword(connection.password)
                                 }}
                             >
-                                <div>{connection.name}</div>
-                                <div className="text-ellipsis text-xs">{connection.database}</div>
+                                <div className="font-bold text-sm dark:text-white">{connection.name}</div>
+                                <div className="text-ellipsis text-xs text-slate-500 dark:text-white">{connection.database.substring(connection.database.length - 8, connection.database.length - 1)}</div>
                             </div>
                         })
                     }
                 </div>
+            </div>
+            <div className="ml-1 mt-1 text-xs dark:text-slate-200">
+                Scroll right to show more connections
             </div>
             <div className="h-8"></div>
             <div className="grid grid-cols-3 gap-4">
@@ -143,6 +147,7 @@ function LoginPage() {
                         config.password = password;
                     }
                     await DatabaseManager.connect(url, config);
+                    setEncryptionPassword(password)
                     setDefaultDbName(name);
                     navigate('/home');
                 }}>Login</Button>
