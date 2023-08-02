@@ -154,9 +154,9 @@ function HomePage() {
                                         <tr>
                                             {
                                                 filteredResults ? Object.keys(results?.[0] || {}).map((key, index) => {
-                                                    return <td key={index} className={"pl-1 " + getWidth(key)}>
+                                                    return <td key={index} className={"pl-1 pb-2 " + getWidth(key)}>
                                                         <input
-                                                            className="h-6 px-2 w-full text-xs rounded-full dark:bg-slate-600 dark:placeholder:text-slate-400 shadow-sm focus:outline-none focus:border-blue-500 bg-slate-50"
+                                                            className="h-6 px-2 w-full text-xs rounded-full dark:bg-slate-600 dark:placeholder:text-slate-400 shadow-sm focus:outline-none focus:border-blue-500 bg-slate-100"
                                                             placeholder={formatKey(key)}
                                                             onChange={(e) => {
                                                                 const filtered = results?.filter((item) => {
