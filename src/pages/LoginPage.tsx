@@ -77,8 +77,8 @@ function LoginPage() {
             showAlert && alert
         }
         <div className="w-screen h-screen flex justify-center items-center bg-slate-100 dark:bg-slate-900">
-            <div className="w-full sm:w-full md:w-1/2 lg:w-1/3 h-[660px] rounded-lg bg-white dark:bg-slate-800 p-4">
-                <div className="font-bold text-xl dark:text-white">Poker Login</div>
+            <div className="w-full sm:w-full md:w-1/2 lg:w-1/3 h-[680px] rounded-lg bg-white dark:bg-slate-800 p-4">
+                <div className="font-bold text-xl text-indigo-600 dark:text-indigo-500">Poker Login</div>
                 <div className="h-6"></div>
                 <Input
                     size="sm"
@@ -128,6 +128,8 @@ function LoginPage() {
                     onChange={(text) => setPassword(text)}
                 />
                 <div className="h-4"></div>
+                <div className="font-bold text-indigo-600 dark:text-indigo-500">Favorites</div>
+                <div className="h-1"></div>
                 <div className="container mx-auto">
                     <div className="flex overflow-x-auto gap-4">
                         {
