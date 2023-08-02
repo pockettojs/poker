@@ -22,7 +22,7 @@ function HomePage() {
 
     useEffect(() => {
         if (!collections) {
-            getCollections(query => query.orderBy('createdAt', 'desc')).then((collections) => {
+            getCollections(query => query.orderBy('id', 'asc')).then((collections) => {
                 setCollections(collections);
                 setFilteredCollections(collections);
             });
@@ -47,6 +47,9 @@ function HomePage() {
             const result = output.docs.map((item: any) => {
                 return { id: item._id, rev: item._rev, ...decrypt(item.payload), };
             })
+            result.sort((a: any, b: any) => {
+                return a.updatedAt > b.updatedAt ? -1 : 1;
+            });
             setResults(result);
             setFilteredResults(result);
         } catch (error) {
@@ -75,19 +78,16 @@ function HomePage() {
         if (key === 'id') {
             return value.split('.')[1];
         }
+        if (value.length === 24 && value[10] === 'T' && value[23] === 'Z') {
+            return value.replace('T', ' ').replace('Z', '')
+        }
         if (typeof value === 'object') {
             return JSON.stringify(value, null, 2);
         }
         return String(value);
     }
     function getWidth(key: string) {
-        if (key === 'rev') {
-            return 'w-10';
-        }
-        if (key === 'id') {
-            return 'w-20';
-        }
-        return 'w-30';
+        return 'w-10';
     }
 
     return (
@@ -176,7 +176,11 @@ function HomePage() {
                                                 return <tr key={index}>
                                                     {
                                                         Object.keys(item).map((key, indexJ) => {
-                                                            return <td key={indexJ} className="px-2 pb-2 text-slate-900 text-xs dark:text-white">{formatValue(key, item[key])}</td>
+                                                            return <td key={indexJ} valign="top" className="px-2 pb-2 text-slate-900 text-xs dark:text-white">
+                                                                <pre>
+                                                                    {formatValue(key, item[key])}
+                                                                </pre>
+                                                            </td>
                                                         })
                                                     }
                                                 </tr>
