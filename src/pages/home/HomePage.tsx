@@ -75,6 +75,9 @@ function HomePage() {
         if (key === 'id') {
             return value.split('.')[1];
         }
+        if (typeof value === 'object') {
+            return JSON.stringify(value, null, 2);
+        }
         return String(value);
     }
 
