@@ -65,7 +65,7 @@ function HomePage() {
 
     return (
         <div className="w-screen h-screen bg-slate-100 dark:bg-slate-900 flex">
-            <div className="w-1/4 p-4">
+            <div className="w-1/6 p-4">
                 <input
                     className="w-full h-8 px-4 text-sm rounded-full dark:bg-slate-300 dark:placeholder:text-slate-500 shadow-sm focus:outline-none focus:border-blue-500"
                     placeholder="Search Collection"
@@ -96,7 +96,7 @@ function HomePage() {
                     }
                 </div>
             </div>
-            <div className="w-3/4 overflow-x-auto bg-white dark:bg-slate-800 shadow-sm rounded-lg p-4 mb-4">
+            <div className="w-5/6 overflow-x-auto bg-white dark:bg-slate-800 shadow-sm rounded-lg p-4 mb-4">
                 {
                     !filteredResults && <div className="w-full h-full flex justify-center items-center">
                         <div className="text-slate-600 dark:text-white">Please select a collection</div>
