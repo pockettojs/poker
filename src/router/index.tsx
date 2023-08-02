@@ -21,7 +21,7 @@ const router = createBrowserRouter([
         element: <HomePage />,
     },
     {
-        path: '/connections',
+        path: '/favorites',
         element: <ConnectionList />,
     }
 ]);

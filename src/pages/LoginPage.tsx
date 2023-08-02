@@ -148,15 +148,18 @@ function LoginPage() {
                                 </div>
                             })
                         }
+                        {
+                            !connections || connections.length === 0 && <div className="h-[40px]"></div>
+                        }
                     </div>
                 </div>
                 <div className="ml-1 mt-1 text-xs dark:text-slate-200">
                     Scroll right to show more connections
                 </div>
                 <div className="ml-1 text-xs dark:text-blue-400 cursor-pointer text-blue-600 underline" onClick={() => {
-                    navigate('/connections');
+                    navigate('/favorites');
                 }}>
-                    Manage Connections
+                    Manage Favorites
                 </div>
                 <div className="h-8"></div>
                 <div className="grid grid-cols-3 gap-4">

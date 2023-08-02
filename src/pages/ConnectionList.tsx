@@ -32,7 +32,7 @@ function ConnectionList() {
     return <div>
         <div className="w-screen h-screen bg-slate-100 dark:bg-slate-900 flex">
             <div className="w-1/6 p-4">
-                <div className="ml-2 mb-2 text-lg">Connections</div>
+                <div className="ml-2 mb-2 text-lg">Favorites</div>
                 <div className="ml-2 space-y-2 text-md">
                     {
                         connections && connections.map((connection) => {
