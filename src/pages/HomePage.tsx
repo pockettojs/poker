@@ -1,5 +1,6 @@
 import { DatabaseManager } from "pocket";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Alert from "src/components/Alert";
 import { getCollections } from "src/flow/collection.flow";
 import { getConnection } from "src/flow/login.flow";
@@ -20,19 +21,24 @@ function HomePage() {
     const [alert, setAlert] = useState<any>();
     const [showAlert, setShowAlert] = useState<boolean>(false);
 
+    const navigate = useNavigate();
+
     useEffect(() => {
+        const connection = getConnection();
+        if (!connection) {
+            navigate('/login');
+            return;
+        }
+        setConnection(connection);
+        const db = DatabaseManager.get(connection.name);
+        setDb(db);
+
         if (!collections) {
             getCollections(query => query.orderBy('id', 'asc')).then((collections) => {
                 setCollections(collections);
                 setFilteredCollections(collections);
             });
         }
-
-        const connection = getConnection();
-        setConnection(connection);
-        const db = DatabaseManager.get(connection.name);
-        setDb(db);
-
     }, [collections]);
 
     async function getModels(collection: Collection) {
