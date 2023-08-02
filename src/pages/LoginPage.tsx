@@ -77,7 +77,7 @@ function LoginPage() {
             showAlert && alert
         }
         <div className="w-screen h-screen flex justify-center items-center bg-slate-100 dark:bg-slate-900">
-            <div className="w-full sm:w-full md:w-1/2 lg:w-1/3 h-[680px] rounded-lg bg-white dark:bg-slate-800 p-4">
+            <div className="w-full sm:w-full md:w-1/2 lg:w-1/3 h-[688px] rounded-lg bg-white dark:bg-slate-800 p-4">
                 <div className="font-bold text-xl text-indigo-600 dark:text-indigo-500">Poker Login</div>
                 <div className="h-6"></div>
                 <Input
@@ -129,7 +129,7 @@ function LoginPage() {
                 />
                 <div className="h-4"></div>
                 <div className="font-bold text-indigo-600 dark:text-indigo-500">Favorites</div>
-                <div className="h-1"></div>
+                <div className="h-2"></div>
                 <div className="container mx-auto">
                     <div className="flex overflow-x-auto gap-4">
                         {
@@ -158,7 +158,8 @@ function LoginPage() {
                         }
                     </div>
                 </div>
-                <div className="ml-1 mt-1 text-xs dark:text-slate-200">
+                <div className="h-2"></div>
+                <div className="ml-1 text-xs dark:text-slate-200">
                     Scroll right to show more connections
                 </div>
                 <div className="ml-1 text-xs dark:text-blue-400 cursor-pointer text-blue-600 underline" onClick={() => {
