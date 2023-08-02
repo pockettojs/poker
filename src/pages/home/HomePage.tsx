@@ -5,8 +5,10 @@ import { getCollections } from "src/flow/collection.flow";
 import { getConnection } from "src/flow/login.flow";
 import { decrypt } from "src/helpers/encryption";
 import { Collection } from "src/models/Collection";
+import { Connection } from "src/models/Connection";
 
 function HomePage() {
+    const [connection, setConnection] = useState<Connection>();
     const [searchText, setSearchText] = useState("");
     const [collections, setCollections] = useState<Collection[]>();
     const [filteredCollections, setFilteredCollections] = useState<Collection[]>();
@@ -27,6 +29,7 @@ function HomePage() {
         }
 
         const connection = getConnection();
+        setConnection(connection);
         const db = DatabaseManager.get(connection.name);
         setDb(db);
 
@@ -81,6 +84,7 @@ function HomePage() {
                 showAlert && alert
             }
             <div className="w-1/6 p-4">
+                <div className="ml-2 mb-4">{connection?.name || ''}</div>
                 <input
                     className="w-full h-8 px-4 text-sm rounded-full dark:bg-slate-300 dark:placeholder:text-slate-500 shadow-sm focus:outline-none focus:border-blue-500"
                     placeholder="Search Collection"
