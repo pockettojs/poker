@@ -1,5 +1,6 @@
 import { DatabaseManager } from "pocket";
 import { useEffect, useState } from "react";
+import Alert from "src/components/Alert";
 import { getCollections } from "src/flow/collection.flow";
 import { getConnection } from "src/flow/login.flow";
 import { decrypt } from "src/helpers/encryption";
@@ -13,6 +14,9 @@ function HomePage() {
     const [results, setResults] = useState<any[]>();
     const [filteredResults, setFilteredResults] = useState<any[]>();
     const [db, setDb] = useState<any>();
+
+    const [alert, setAlert] = useState<any>();
+    const [showAlert, setShowAlert] = useState<boolean>(false);
 
     useEffect(() => {
         if (!collections) {
@@ -36,11 +40,20 @@ function HomePage() {
         const output = await db.find({
             selector: query,
         });
-        const result = output.docs.map((item: any) => {
-            return { id: item._id, rev: item._rev, ...decrypt(item.payload), };
-        })
-        setResults(result);
-        setFilteredResults(result);
+        try {
+            const result = output.docs.map((item: any) => {
+                return { id: item._id, rev: item._rev, ...decrypt(item.payload), };
+            })
+            setResults(result);
+            setFilteredResults(result);
+        } catch (error) {
+            setAlert(<Alert type="error" message={'The database encryption key is wrong, please check'}></Alert>);
+            setShowAlert(true);
+            setTimeout(() => {
+                setAlert(undefined);
+                setShowAlert(false);
+            }, 4000);
+        }
     }
 
     function formatKey(key: string) {
@@ -64,6 +77,9 @@ function HomePage() {
 
     return (
         <div className="w-screen h-screen bg-slate-100 dark:bg-slate-900 flex">
+            {
+                showAlert && alert
+            }
             <div className="w-1/6 p-4">
                 <input
                     className="w-full h-8 px-4 text-sm rounded-full dark:bg-slate-300 dark:placeholder:text-slate-500 shadow-sm focus:outline-none focus:border-blue-500"

@@ -14,6 +14,7 @@ function Alert({
             style={{
                 marginRight: '1%',
                 paddingLeft: '1%',
+                paddingRight: '1%',
                 marginTop: '1%',
                 paddingTop: '12px',
                 height: '48px',
