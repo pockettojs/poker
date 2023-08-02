@@ -129,7 +129,7 @@ function LoginPage() {
                             connections.map((connection, index) => {
                                 return <div
                                     key={index}
-                                    className="cursor-pointer flex-none w-24 h-[40px] rounded-md border-slate-300  border shadow-md pl-2"
+                                    className="relative z-10 cursor-pointer flex-none w-24 h-[40px] rounded-md border-slate-300  border shadow-md pl-2"
                                     onClick={() => {
                                         setName(connection.name)
                                         setHost(connection.host)
@@ -161,8 +161,7 @@ function LoginPage() {
                     <Button type="outline" color="green" onClick={async () => {
                         await updateConnection();
                         const db = await establishConnection();
-                        db.allDocs().then((result: any) => {
-                            console.log('result: ', result);
+                        db.allDocs().then(() => {
                             setAlert(<Alert type="success" message={'Connect successfully!'}></Alert>);
                             setShowAlert(true);
                             setTimeout(() => {
@@ -177,8 +176,6 @@ function LoginPage() {
                                 setShowAlert(false);
                             }, 4000);
                         });
-
-
 
                     }}>Connect</Button>
                     <Button type="outline" color="blue" onClick={async () => {

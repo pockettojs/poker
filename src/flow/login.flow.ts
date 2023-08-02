@@ -16,3 +16,7 @@ export async function saveConnection() {
 export async function getConnections() {
     return Connection.all();
 }
+
+export async function deleteConnection(id: string) {
+    await Connection.where('id', id).delete();
+}
