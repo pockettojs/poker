@@ -2,7 +2,7 @@ import { DatabaseManager } from "pocket";
 import { useEffect, useState } from "react";
 import Button from "src/components/Button";
 import Input from "src/components/Input";
-import { deleteConnection, getConnections, saveConnection, setConnection } from "src/flow/login.flow";
+import { deleteConnection, getConnections, setConnection } from "src/flow/login.flow";
 import { Connection } from "src/models/Connection";
 
 function ConnectionList() {

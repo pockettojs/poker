@@ -149,7 +149,7 @@ function LoginPage() {
                             })
                         }
                         {
-                            !connections || connections.length === 0 && <div className="h-[40px]"></div>
+                            (!connections || connections.length === 0) && <div className="h-[40px]"></div>
                         }
                     </div>
                 </div>
