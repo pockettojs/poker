@@ -5,7 +5,7 @@ import {
 import ConnectionList from 'src/pages/ConnectionList';
 import IndexPage from 'src/pages/IndexPage';
 import LoginPage from 'src/pages/LoginPage';
-import HomePage from 'src/pages/home/HomePage';
+import HomePage from 'src/pages/HomePage';
 
 const router = createBrowserRouter([
     {
