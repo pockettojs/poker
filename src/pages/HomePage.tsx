@@ -69,12 +69,6 @@ function HomePage() {
     }
 
     function formatKey(key: string) {
-        if (key === 'rev') {
-            return 'No';
-        }
-        if (key === 'id') {
-            return 'ID';
-        }
         return key;
     }
     function formatValue(key: string, value: any) {
