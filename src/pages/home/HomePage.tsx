@@ -118,7 +118,7 @@ function HomePage() {
                     }
                 </div>
             </div>
-            <div className="w-5/6 overflow-x-auto bg-white dark:bg-slate-800 shadow-sm rounded-lg p-4 mb-4">
+            <div className="w-5/6 overflow-x-auto bg-white dark:bg-slate-800 shadow-sm rounded-lg p-4">
                 {
                     !filteredResults && <div className="w-full h-full flex justify-center items-center">
                         <div className="text-slate-600 dark:text-white">Please select a collection</div>

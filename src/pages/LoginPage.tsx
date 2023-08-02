@@ -72,7 +72,7 @@ function LoginPage() {
             showAlert && alert
         }
         <div className="w-screen h-screen flex justify-center items-center bg-slate-100 dark:bg-slate-900">
-            <div className="w-full sm:w-full md:w-1/4 lg:1/3 h-[620px] rounded-lg bg-white dark:bg-slate-800 p-4">
+            <div className="w-full sm:w-full md:w-1/4 lg:1/3 h-[650px] rounded-lg bg-white dark:bg-slate-800 p-4">
                 <div className="font-bold text-xl dark:text-white">Poker Login</div>
                 <div className="h-6"></div>
                 <Input
@@ -150,6 +150,11 @@ function LoginPage() {
                 </div>
                 <div className="ml-1 mt-1 text-xs dark:text-slate-200">
                     Scroll right to show more connections
+                </div>
+                <div className="ml-1 text-xs dark:text-blue-400 cursor-pointer text-blue-600 underline" onClick={() => {
+                    navigate('/connections');
+                }}>
+                    Manage Connections
                 </div>
                 <div className="h-8"></div>
                 <div className="grid grid-cols-3 gap-4">
