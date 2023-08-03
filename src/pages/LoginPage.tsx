@@ -37,6 +37,36 @@ function LoginPage() {
         }
     });
 
+    function checkConnection() {
+        if (!name) {
+            setAlert(<Alert type="error" message={'Name is required.'}></Alert>);
+            setShowAlert(true);
+            return false;
+        }
+        if (!host) {
+            setAlert(<Alert type="error" message={'Host is required.'}></Alert>);
+            setShowAlert(true);
+            return false;
+        }
+        if (!port) {
+            setAlert(<Alert type="error" message={'Port is required.'}></Alert>);
+            setShowAlert(true);
+            return false;
+        }
+        if (!database) {
+            setAlert(<Alert type="error" message={'Database is required.'}></Alert>);
+            setShowAlert(true);
+            return false;
+        }
+        if (!password) {
+            setAlert(<Alert type="error" message={'Password is required.'}></Alert>);
+            setShowAlert(true);
+            return false;
+        }
+
+        return true;
+    }
+
     async function updateConnection() {
         const connection = new Connection();
         connection.name = name
@@ -172,6 +202,7 @@ function LoginPage() {
                 <div className="h-8"></div>
                 <div className="grid grid-cols-3 gap-4">
                     <Button type="outline" color="red" onClick={async () => {
+                        if (!checkConnection()) return;
                         await updateConnection();
                         await saveConnection();
                         const connections = await getConnections();
@@ -179,6 +210,7 @@ function LoginPage() {
                         setDefaultDbName(name);
                     }}>Save</Button>
                     <Button type="outline" color="green" onClick={async () => {
+                        if (!checkConnection()) return;
                         await updateConnection();
                         const db = await establishConnection();
                         db.allDocs().then(() => {
@@ -199,6 +231,7 @@ function LoginPage() {
 
                     }}>Connect</Button>
                     <Button type="outline" color="blue" onClick={async () => {
+                        if (!checkConnection()) return;
                         await updateConnection();
                         await establishConnection();
                         navigate('/home');
