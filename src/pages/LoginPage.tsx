@@ -1,4 +1,4 @@
-import { DatabaseManager, PouchDBConfig, setDefaultDbName, setEnvironement } from "pocket";
+import { DatabaseManager, PouchDBConfig, setDefaultDbName, setEnvironment } from "pocket";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "src/components/Button";
@@ -23,7 +23,7 @@ function LoginPage() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        setEnvironement('browser');
+        setEnvironment('browser');
 
         if (!connections) {
             DatabaseManager.connect('default', {

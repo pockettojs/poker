@@ -23,7 +23,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "cross-env PORT=3001 NODE_ENV=dev GENERATE_SOURCEMAP=false react-app-rewired start",
+    "start": "cross-env PORT=2050 NODE_ENV=dev GENERATE_SOURCEMAP=false react-app-rewired start",
     "start:https": "cross-env HTTPS=true NODE_ENV=dev GENERATE_SOURCEMAP=false react-app-rewired start",
     "build": "cross-env BUILD_PATH='./dist' NODE_ENV=prod react-app-rewired build",
     "test": "GENERATE_SOURCEMAP=false react-app-rewired test",
