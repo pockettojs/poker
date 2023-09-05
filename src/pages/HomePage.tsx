@@ -15,6 +15,7 @@ function HomePage() {
     const [filteredCollections, setFilteredCollections] = useState<Collection[]>();
     const [currentCollection, setCurrentCollection] = useState<Collection>();
     const [attributes, setAttributes] = useState<string[]>([]);
+    const [searchAttributes, setSearchAttributes] = useState<string[]>();
     const [results, setResults] = useState<any[]>();
     const [filteredResults, setFilteredResults] = useState<any[]>();
     const [db, setDb] = useState<any>();
@@ -59,10 +60,12 @@ function HomePage() {
             });
 
             setAttributes(result.length > 0 ? Object.keys(result[0]) : []);
+            setSearchAttributes(result.length > 0 ? Object.keys(result[0]).map(() => '') : []);
             for (const item of result) {
                 const attr = Object.keys(item);
                 if (attributes.length === 0 || attr.length > attributes.length) {
                     setAttributes(attr);
+                    setSearchAttributes(attr.map(() => ''));
                 }
             }
 
@@ -168,11 +171,18 @@ function HomePage() {
                                                         <input
                                                             className="h-6 px-2 w-full text-xs rounded-full dark:bg-slate-600 dark:placeholder:text-slate-400 shadow-sm focus:outline-none focus:border-blue-500 bg-slate-100"
                                                             placeholder={formatKey(key)}
+                                                            value={searchAttributes ? searchAttributes[index] : ''}
                                                             onChange={(e) => {
                                                                 const filtered = results?.filter((item) => {
                                                                     return formatValue(key, item[key]).toLowerCase().includes(e.target.value.toLowerCase());
                                                                 });
                                                                 setFilteredResults(filtered || []);
+                                                                setSearchAttributes(searchAttributes?.map((item, indexJ) => {
+                                                                    if (index === indexJ) {
+                                                                        return e.target.value;
+                                                                    }
+                                                                    return item;
+                                                                }));
                                                             }}
                                                         />
                                                     </td>
