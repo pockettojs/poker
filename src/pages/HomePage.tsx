@@ -86,6 +86,8 @@ function HomePage() {
 
             setResults(result);
             setFilteredResults(result);
+            setEditItem(undefined);
+            setEditKey(undefined);
         } catch (error) {
             setAlert(<Alert type="error" message={'The database encryption key is wrong, please check'}></Alert>);
             setShowAlert(true);
@@ -273,8 +275,6 @@ function HomePage() {
                                                                                 }, 4000);
                                                                             });
                                                                             await getModels(currentCollection as Collection);
-                                                                            setEditItem(undefined);
-                                                                            setEditKey(undefined);
 
                                                                             setAlert(<Alert type="success" message={'Updated successfully'}></Alert>);
                                                                             setShowAlert(true);
