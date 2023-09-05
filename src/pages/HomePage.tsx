@@ -8,6 +8,15 @@ import { decrypt } from "src/helpers/encryption";
 import { Collection } from "src/models/Collection";
 import { Connection } from "src/models/Connection";
 
+// const NUMBER_TEXT_COLOR_DARK = "#4F46E5";
+const NUMBER_TEXT_COLOR_LIGHT = "#3a33a1";
+// const BOOLEAN_TEXT_COLOR_DARK = "#F97316";
+const BOOLEAN_TEXT_COLOR_LIGHT = "#e36812";
+const NULL_TEXT_COLOR = "#718096";
+const UNDEFINED_TEXT_COLOR = "#718096";
+// const STRING_TEXT_COLOR_DARK = "#22C55E";
+const STRING_TEXT_COLOR_LIGHT = "#199e4a";
+
 function HomePage() {
     const [connection, setConnection] = useState<Connection>();
     const [searchText, setSearchText] = useState("");
@@ -57,7 +66,9 @@ function HomePage() {
         });
         try {
             const result = output.docs.map((item: any) => {
-                return { id: item._id, rev: item._rev, ...decrypt(item.payload), };
+                const newItem = { id: item._id, rev: item._rev, ...decrypt(item.payload), };
+                delete newItem.payload;
+                return newItem;
             })
             result.sort((a: any, b: any) => {
                 return a.updatedAt > b.updatedAt ? -1 : 1;
@@ -106,6 +117,24 @@ function HomePage() {
     function getWidth() {
         return 'w-10';
     }
+    function getColor(value: any) {
+        if (value === null) {
+            return NULL_TEXT_COLOR;
+        }
+        if (value === undefined) {
+            return UNDEFINED_TEXT_COLOR;
+        }
+        if (typeof value === 'number') {
+            return NUMBER_TEXT_COLOR_LIGHT;
+        }
+        if (typeof value === 'boolean') {
+            return BOOLEAN_TEXT_COLOR_LIGHT;
+        }
+        if (typeof value === 'string') {
+            return STRING_TEXT_COLOR_LIGHT;
+        }
+        return STRING_TEXT_COLOR_LIGHT;
+    }
 
     return (
         <div className="w-screen h-screen bg-slate-100 dark:bg-slate-900 flex">
@@ -133,9 +162,9 @@ function HomePage() {
                             return <div
                                 key={item.id}
                                 className="w-full cursor-pointer"
-                                onClick={() => {
+                                onClick={async () => {
                                     setCurrentCollection(item);
-                                    getModels(item);
+                                    await getModels(item);
                                 }}
                             >
                                 <div className="text-slate-900 dark:text-white">{item.id}</div>
@@ -225,13 +254,27 @@ function HomePage() {
                                                                             if (value === 'undefined') {
                                                                                 editItem[key] = undefined;
                                                                             }
-                                                                            await db.put({
-                                                                                _id: item.id,
-                                                                                _rev: item.rev,
+                                                                            editItem._id = editItem.id;
+                                                                            editItem._rev = editItem.rev;
+                                                                            delete editItem.id;
+                                                                            delete editItem.rev;
+                                                                            const originalDoc = await db.get(editItem._id)
+                                                                            const newItem = {
+                                                                                _id: editItem._id,
+                                                                                _rev: originalDoc._rev,
                                                                                 ...editItem,
-                                                                                [key]: value,
+                                                                            };
+                                                                            await db.put(newItem).catch((err: any) => {
+                                                                                setAlert(<Alert type="error" message={err.message}></Alert>);
+                                                                                setShowAlert(true);
+                                                                                setTimeout(() => {
+                                                                                    setAlert(undefined);
+                                                                                    setShowAlert(false);
+                                                                                }, 4000);
                                                                             });
                                                                             await getModels(currentCollection as Collection);
+                                                                            setEditItem(undefined);
+                                                                            setEditKey(undefined);
 
                                                                             setAlert(<Alert type="success" message={'Updated successfully'}></Alert>);
                                                                             setShowAlert(true);
@@ -240,10 +283,17 @@ function HomePage() {
                                                                                 setShowAlert(false);
                                                                             }, 4000);
                                                                         }}
-                                                                    /> : <pre onClick={() => {
-                                                                        setEditItem(item);
-                                                                        setEditKey(key);
-                                                                    }}>
+                                                                    /> : <pre
+                                                                        onClick={() => {
+                                                                            if (!editItem || item.id !== editItem?.id) {
+                                                                                setEditItem(item);
+                                                                            }
+                                                                            setEditKey(key);
+                                                                        }}
+                                                                        style={{
+                                                                            color: getColor(item[key]),
+                                                                        }}
+                                                                    >
                                                                         {formatValue(key, item[key])}
                                                                     </pre>
                                                                 }
