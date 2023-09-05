@@ -14,6 +14,7 @@ function HomePage() {
     const [collections, setCollections] = useState<Collection[]>();
     const [filteredCollections, setFilteredCollections] = useState<Collection[]>();
     const [currentCollection, setCurrentCollection] = useState<Collection>();
+    const [attributes, setAttributes] = useState<string[]>([]);
     const [results, setResults] = useState<any[]>();
     const [filteredResults, setFilteredResults] = useState<any[]>();
     const [db, setDb] = useState<any>();
@@ -56,6 +57,15 @@ function HomePage() {
             result.sort((a: any, b: any) => {
                 return a.updatedAt > b.updatedAt ? -1 : 1;
             });
+
+            setAttributes(result.length > 0 ? Object.keys(result[0]) : []);
+            for (const item of result) {
+                const attr = Object.keys(item);
+                if (attributes.length === 0 || attr.length > attributes.length) {
+                    setAttributes(attr);
+                }
+            }
+
             setResults(result);
             setFilteredResults(result);
         } catch (error) {
@@ -78,10 +88,10 @@ function HomePage() {
         if (key === 'id') {
             return value.split('.')[1];
         }
-        if (value.length === 24 && value[10] === 'T' && value[23] === 'Z') {
+        if (value && value.length === 24 && value[10] === 'T' && value[23] === 'Z') {
             return value.replace('T', ' ').replace('Z', '')
         }
-        if (typeof value === 'object') {
+        if (value && typeof value === 'object') {
             return JSON.stringify(value, null, 2);
         }
         return String(value);
@@ -146,14 +156,14 @@ function HomePage() {
                                     <thead>
                                         <tr>
                                             {
-                                                filteredResults ? Object.keys(results?.[0] || {}).map((key, index) => {
+                                                filteredResults ? attributes.map((key, index) => {
                                                     return <th key={index} className="px-2 pb-2 text-slate-900 dark:text-white">{formatKey(key)}</th>
                                                 }) : <></>
                                             }
                                         </tr>
                                         <tr>
                                             {
-                                                filteredResults ? Object.keys(results?.[0] || {}).map((key, index) => {
+                                                filteredResults ? attributes.map((key, index) => {
                                                     return <td key={index} className={"pl-1 pb-2 " + getWidth()}>
                                                         <input
                                                             className="h-6 px-2 w-full text-xs rounded-full dark:bg-slate-600 dark:placeholder:text-slate-400 shadow-sm focus:outline-none focus:border-blue-500 bg-slate-100"
@@ -175,7 +185,7 @@ function HomePage() {
                                             filteredResults ? filteredResults?.map((item, index) => {
                                                 return <tr key={index}>
                                                     {
-                                                        Object.keys(item).map((key, indexJ) => {
+                                                        attributes.map((key, indexJ) => {
                                                             return <td key={indexJ} valign="top" className="px-2 pb-2 text-slate-900 text-xs dark:text-white">
                                                                 <pre>
                                                                     {formatValue(key, item[key])}
