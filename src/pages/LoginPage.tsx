@@ -35,7 +35,27 @@ function LoginPage() {
                 });
             })
         }
-    });
+
+        const params = Object.fromEntries(new URLSearchParams(window.location.search).entries());
+        if (params.name) {
+            setName(params.name);
+        }
+        if (params.host) {
+            setHost(params.host);
+        }
+        if (params.port) {
+            setPort(params.port);
+        }
+        if (params.database) {
+            setDatabase(params.database);
+        }
+        if (params.username) {
+            setUsername(params.username);
+        }
+        if (params.password) {
+            setPassword(params.password);
+        }
+    }, [connections]);
 
     function checkConnection() {
         if (!name) {
