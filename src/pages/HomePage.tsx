@@ -23,6 +23,10 @@ function HomePage() {
     const [alert, setAlert] = useState<any>();
     const [showAlert, setShowAlert] = useState<boolean>(false);
 
+    // Edit field
+    const [editItem, setEditItem] = useState<any>();
+    const [editKey, setEditKey] = useState<string>();
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -197,9 +201,52 @@ function HomePage() {
                                                     {
                                                         attributes.map((key, indexJ) => {
                                                             return <td key={indexJ} valign="top" className="px-2 pb-2 text-slate-900 text-xs dark:text-white">
-                                                                <pre>
-                                                                    {formatValue(key, item[key])}
-                                                                </pre>
+                                                                {
+                                                                    editItem && editItem.id === item.id && editKey === key ? <input
+                                                                        className="border-2 bottom-slate-500"
+                                                                        value={editItem[key]}
+                                                                        onChange={(e) => {
+                                                                            setEditItem({
+                                                                                ...editItem,
+                                                                                [key]: e.target.value,
+                                                                            });
+                                                                        }}
+                                                                        onBlur={async () => {
+                                                                            const value = editItem[key];
+                                                                            if (!Number.isNaN(Number(value))) {
+                                                                                editItem[key] = Number(value);
+                                                                            }
+                                                                            if (value === 'true' || value === 'false') {
+                                                                                editItem[key] = value === 'true';
+                                                                            }
+                                                                            if (value === 'null') {
+                                                                                editItem[key] = null;
+                                                                            }
+                                                                            if (value === 'undefined') {
+                                                                                editItem[key] = undefined;
+                                                                            }
+                                                                            await db.put({
+                                                                                _id: item.id,
+                                                                                _rev: item.rev,
+                                                                                ...editItem,
+                                                                                [key]: value,
+                                                                            });
+                                                                            await getModels(currentCollection as Collection);
+
+                                                                            setAlert(<Alert type="success" message={'Updated successfully'}></Alert>);
+                                                                            setShowAlert(true);
+                                                                            setTimeout(() => {
+                                                                                setAlert(undefined);
+                                                                                setShowAlert(false);
+                                                                            }, 4000);
+                                                                        }}
+                                                                    /> : <pre onClick={() => {
+                                                                        setEditItem(item);
+                                                                        setEditKey(key);
+                                                                    }}>
+                                                                        {formatValue(key, item[key])}
+                                                                    </pre>
+                                                                }
                                                             </td>
                                                         })
                                                     }
