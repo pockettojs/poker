@@ -48,6 +48,7 @@ export default forwardRef(({
         }
         if (type === 'text') {
             setHoverBgColor('hover:bg-gray-50');
+            setBgColor('bg-transparent');
             if (color === 'automate') {
                 setTextColor('text-automate-500 dark:text-automate-600');
             } else if (color === 'red') {
