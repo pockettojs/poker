@@ -1,5 +1,5 @@
 import { DatabaseManager } from "pocket";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Alert from "src/components/Alert";
 import { getCollections } from "src/flow/collection.flow";
@@ -35,6 +35,7 @@ function HomePage() {
     // Edit field
     const [editItem, setEditItem] = useState<any>();
     const [editKey, setEditKey] = useState<string>();
+    const editInputRef = useRef<HTMLInputElement>(null);
 
     const navigate = useNavigate();
 
@@ -234,6 +235,7 @@ function HomePage() {
                                                             return <td key={indexJ} valign="top" className="px-2 pb-2 text-slate-900 text-xs dark:text-white">
                                                                 {
                                                                     editItem && editItem.id === item.id && editKey === key ? <input
+                                                                        ref={editInputRef}
                                                                         className="border-2 bottom-slate-500"
                                                                         value={editItem[key]}
                                                                         onChange={(e) => {
@@ -241,6 +243,15 @@ function HomePage() {
                                                                                 ...editItem,
                                                                                 [key]: e.target.value,
                                                                             });
+                                                                        }}
+                                                                        onKeyDown={(e) => {
+                                                                            if (e.key === 'Enter') {
+                                                                                editInputRef.current?.blur();
+                                                                            }
+                                                                            if (e.key === 'Escape') {
+                                                                                setEditItem(undefined);
+                                                                                setEditKey(undefined);
+                                                                            }
                                                                         }}
                                                                         onBlur={async () => {
                                                                             const value = editItem[key];
@@ -285,10 +296,18 @@ function HomePage() {
                                                                         }}
                                                                     /> : <pre
                                                                         onClick={() => {
+                                                                            // cannot edit id and rev
+                                                                            if (key === 'id' || key === 'rev') {
+                                                                                return;
+                                                                            }
                                                                             if (!editItem || item.id !== editItem?.id) {
                                                                                 setEditItem(item);
                                                                             }
                                                                             setEditKey(key);
+
+                                                                            setTimeout(() => {
+                                                                                editInputRef.current?.focus();
+                                                                            }, 100);
                                                                         }}
                                                                         style={{
                                                                             color: getColor(item[key]),
