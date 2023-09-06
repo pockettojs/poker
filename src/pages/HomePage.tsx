@@ -186,7 +186,7 @@ function HomePage() {
         newItem.id = newItem.id.split('.').slice(1).join('.');
 
         if (typeof json != 'string') {
-            json = JSON.stringify(json, undefined, 4);
+            json = JSON.stringify(json, undefined, 2);
         }
         json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
         const pattern = /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+-]?\d+)?|\{|\}|\[|\]|,)/g;
