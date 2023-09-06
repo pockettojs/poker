@@ -58,7 +58,6 @@ function HomePage() {
         window.matchMedia('(prefers-color-scheme: dark)')
             .addEventListener('change', event => {
                 const colorScheme = event.matches ? "dark" : "light";
-                console.log('colorScheme: ', colorScheme);
                 setColorScheme(colorScheme);
             });
     }, []);
@@ -107,15 +106,20 @@ function HomePage() {
                 for (let i = 0; i < result.length; i++) {
                     const item = result[i];
                     const attr = Object.keys(item);
+                    console.log('attr: ', attr);
                     if (i === 0) {
                         currentAttr = attr;
                         setAttributes(currentAttr);
                         setSearchAttributes(currentAttr.map(() => ''));
                     }
-                    if (currentAttr.length < attr.length) {
+                    if (attr.length > currentAttr.length) {
                         currentAttr = attr;
                         setAttributes(currentAttr);
                         setSearchAttributes(currentAttr.map(() => ''));
+                    } else if (attr.length === currentAttr.length) {
+                        currentAttr = Array.from(new Set([...currentAttr, ...attr]));
+                        setAttributes(Array.from(currentAttr));
+                        setSearchAttributes(Array.from(currentAttr).map(() => ''));
                     }
                 }
 
@@ -203,7 +207,6 @@ function HomePage() {
             } else if (/undefined/.test(match)) {
                 cls = UNDEFINED_TEXT_COLOR;
             } else {
-                console.log('colorScheme: ', colorScheme);
                 if (colorScheme === 'dark') {
                     cls = 'white';
                 } else {
@@ -352,8 +355,8 @@ function HomePage() {
                                         {
                                             filteredResults ? filteredResults?.map((item, index) => {
                                                 return <tr key={index}>
-                                                    <td>
-                                                        <Delete16Filled className="mt-[-8px] w-4 h-4 text-red-500 cursor-pointer" onClick={() => {
+                                                    <td valign="top">
+                                                        <Delete16Filled className="w-4 h-4 text-red-500 cursor-pointer" onClick={() => {
                                                             setDeleteItem(item);
                                                         }} />
                                                     </td>
