@@ -185,7 +185,7 @@ function HomePage() {
             json = JSON.stringify(json, undefined, 4);
         }
         json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        const pattern = /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?|\{|\}|\[|\]|,)/g;
+        const pattern = /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+-]?\d+)?|\{|\}|\[|\]|,)/g;
         return json.replace(pattern, function (match: string) {
             var cls = 'white';
             if (/^"/.test(match)) {
@@ -194,7 +194,7 @@ function HomePage() {
                 } else {
                     cls = STRING_TEXT_COLOR_LIGHT;
                 }
-            } else if (/^-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?$/.test(match)) {
+            } else if (/^-?\d+(?:\.\d*)?(?:[eE][+-]?\d+)?$/.test(match)) {
                 cls = NUMBER_TEXT_COLOR_LIGHT;
             } else if (/true|false/.test(match)) {
                 cls = BOOLEAN_TEXT_COLOR_LIGHT;
@@ -226,7 +226,7 @@ function HomePage() {
                 <div className="h-6"></div>
                 <div className="text-black dark:text-slate-400">Do you sure you want to continue to delete the following item?</div>
                 <div className="h-4"></div>
-                <div className="text-[13px] border border-slate-200 dark:border-slate-900 w-full h-auto p-4 rounded-md dark:bg-slate-800 bg-slate-100">
+                <div className="text-[13px] border border-slate-200 dark:border-slate-900 w-full h-auto max-h-80 overflow-y-auto p-4 rounded-md dark:bg-slate-800 bg-slate-100">
                     <pre dangerouslySetInnerHTML={{ __html: deleteItem && syntaxHighlight(deleteItem) }}></pre>
                 </div>
                 <div className="h-8"></div>
