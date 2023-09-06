@@ -7,6 +7,10 @@ import { getConnection } from "src/flow/login.flow";
 import { decrypt } from "src/helpers/encryption";
 import { Collection } from "src/models/Collection";
 import { Connection } from "src/models/Connection";
+import AsyncLock from 'async-lock';
+
+const lock = new AsyncLock();
+const LOCK_KEY = 'model-query';
 
 // const NUMBER_TEXT_COLOR_DARK = "#4F46E5";
 const NUMBER_TEXT_COLOR_LIGHT = "#3a33a1";
@@ -66,38 +70,52 @@ function HomePage() {
         const output = await db.find({
             selector: query,
         });
-        try {
-            const result = output.docs.map((item: any) => {
-                const newItem = { id: item._id, rev: item._rev, ...decrypt(item.payload), };
-                delete newItem.payload;
-                return newItem;
-            })
-            result.sort((a: any, b: any) => {
-                return a.updatedAt > b.updatedAt ? -1 : 1;
-            });
+        lock.acquire(LOCK_KEY, async (done) => {
+            try {
+                const result = output.docs.map((item: any) => {
+                    const newItem = { id: item._id, rev: item._rev, ...decrypt(item.payload), };
+                    delete newItem.payload;
+                    delete newItem._revisions;
+                    return newItem;
+                })
 
-            setAttributes(result.length > 0 ? Object.keys(result[0]) : []);
-            setSearchAttributes(result.length > 0 ? Object.keys(result[0]).map(() => '') : []);
-            for (const item of result) {
-                const attr = Object.keys(item);
-                if (attributes.length === 0 || attr.length > attributes.length) {
-                    setAttributes(attr);
-                    setSearchAttributes(attr.map(() => ''));
+                result.sort((a: any, b: any) => {
+                    return a.updatedAt > b.updatedAt ? -1 : 1;
+                });
+
+                setAttributes([]);
+                let currentAttr: string[] = [];
+                for (let i = 0; i < result.length; i++) {
+                    const item = result[i];
+                    const attr = Object.keys(item);
+                    if (i === 0) {
+                        currentAttr = attr;
+                        setAttributes(currentAttr);
+                        setSearchAttributes(currentAttr.map(() => ''));
+                    }
+                    if (currentAttr.length < attr.length) {
+                        currentAttr = attr;
+                        setAttributes(currentAttr);
+                        setSearchAttributes(currentAttr.map(() => ''));
+                    }
                 }
-            }
 
-            setResults(result);
-            setFilteredResults(result);
-            setEditItem(undefined);
-            setEditKey(undefined);
-        } catch (error) {
-            setAlert(<Alert type="error" message={'The database encryption key is wrong, please check'}></Alert>);
-            setShowAlert(true);
-            setTimeout(() => {
-                setAlert(undefined);
-                setShowAlert(false);
-            }, 4000);
-        }
+                setResults(result);
+                setFilteredResults(result);
+                setEditItem(undefined);
+                setEditKey(undefined);
+                done();
+            } catch (error) {
+                setAlert(<Alert type="error" message={'The database encryption key is wrong, please check'}></Alert>);
+                setShowAlert(true);
+                setTimeout(() => {
+                    setAlert(undefined);
+                    setShowAlert(false);
+                }, 4000);
+                done(error as Error);
+            }
+        });
+
     }
 
     function formatKey(key: string) {
