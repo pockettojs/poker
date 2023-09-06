@@ -33,6 +33,7 @@ function HomePage() {
     const [showAlert, setShowAlert] = useState<boolean>(false);
 
     // Edit field
+    const [originalValue, setOriginalValue] = useState<any>();
     const [editItem, setEditItem] = useState<any>();
     const [editKey, setEditKey] = useState<string>();
     const editInputRef = useRef<HTMLInputElement>(null);
@@ -255,6 +256,12 @@ function HomePage() {
                                                                         }}
                                                                         onBlur={async () => {
                                                                             const value = editItem[key];
+                                                                            if (value === originalValue) {
+                                                                                setEditItem(undefined);
+                                                                                setEditKey(undefined);
+                                                                                setOriginalValue(undefined);
+                                                                                return;
+                                                                            }
                                                                             if (!Number.isNaN(Number(value))) {
                                                                                 editItem[key] = Number(value);
                                                                             }
@@ -285,6 +292,7 @@ function HomePage() {
                                                                                     setShowAlert(false);
                                                                                 }, 4000);
                                                                             });
+                                                                            setOriginalValue(undefined);
                                                                             await getModels(currentCollection as Collection);
 
                                                                             setAlert(<Alert type="success" message={'Updated successfully'}></Alert>);
@@ -304,6 +312,7 @@ function HomePage() {
                                                                                 setEditItem(item);
                                                                             }
                                                                             setEditKey(key);
+                                                                            setOriginalValue(item[key]);
 
                                                                             setTimeout(() => {
                                                                                 editInputRef.current?.focus();
