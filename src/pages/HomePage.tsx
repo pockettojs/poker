@@ -1,5 +1,5 @@
 import { DatabaseManager } from "pocket";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Alert from "src/components/Alert";
 import { getCollections } from "src/flow/collection.flow";
@@ -26,6 +26,7 @@ const UNDEFINED_TEXT_COLOR = "#718096";
 const STRING_TEXT_COLOR_LIGHT = "#199e4a";
 
 function HomePage() {
+    const [colorScheme, setColorScheme] = useState<'light' | 'dark'>('light');
     const [connection, setConnection] = useState<Connection>();
     const [searchText, setSearchText] = useState("");
     const [collections, setCollections] = useState<Collection[]>();
@@ -50,6 +51,17 @@ function HomePage() {
     const [deleteItem, setDeleteItem] = useState<any>();
 
     const navigate = useNavigate();
+
+    useMemo(() => {
+        window.matchMedia('(prefers-color-scheme: dark)').matches ? setColorScheme('dark') : setColorScheme('light');
+
+        window.matchMedia('(prefers-color-scheme: dark)')
+            .addEventListener('change', event => {
+                const colorScheme = event.matches ? "dark" : "light";
+                console.log('colorScheme: ', colorScheme);
+                setColorScheme(colorScheme);
+            });
+    }, []);
 
     useEffect(() => {
         const connection = getConnection();
@@ -173,20 +185,30 @@ function HomePage() {
             json = JSON.stringify(json, undefined, 4);
         }
         json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match: string) {
-            var cls = NUMBER_TEXT_COLOR_LIGHT;
+        const pattern = /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?|\{|\}|\[|\]|,)/g;
+        return json.replace(pattern, function (match: string) {
+            var cls = 'white';
             if (/^"/.test(match)) {
                 if (/:$/.test(match)) {
                     cls = KEY_TEXT_COLOR_LIGHT;
                 } else {
                     cls = STRING_TEXT_COLOR_LIGHT;
                 }
+            } else if (/^-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?$/.test(match)) {
+                cls = NUMBER_TEXT_COLOR_LIGHT;
             } else if (/true|false/.test(match)) {
                 cls = BOOLEAN_TEXT_COLOR_LIGHT;
             } else if (/null/.test(match)) {
                 cls = NULL_TEXT_COLOR;
             } else if (/undefined/.test(match)) {
                 cls = UNDEFINED_TEXT_COLOR;
+            } else {
+                console.log('colorScheme: ', colorScheme);
+                if (colorScheme === 'dark') {
+                    cls = 'white';
+                } else {
+                    cls = 'black';
+                }
             }
             return '<span style="color: ' + cls + ';">' + match + '</span>';
         });
@@ -209,9 +231,13 @@ function HomePage() {
                 </div>
                 <div className="h-8"></div>
                 <div className="w-full flex justify-end gap-4">
-                    <Button size="sm" type="text" color="grey" onClick={() => {
-                        setDeleteItem(undefined);
-                    }}>Cancel</Button>
+                    {
+                        colorScheme === 'light' ? <Button size="sm" type="text" color="black" onClick={() => {
+                            setDeleteItem(undefined);
+                        }}>Cancel</Button> : <Button size="sm" type="default" color="slate" onClick={() => {
+                            setDeleteItem(undefined);
+                        }}>Cancel</Button>
+                    }
                     <Button size="sm" type="outline" color="red" onClick={async () => {
                         await db.remove(deleteItem.id, deleteItem.rev).catch((err: any) => {
                             setAlert(<Alert type="error" message={err.message}></Alert>);
