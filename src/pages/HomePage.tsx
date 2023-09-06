@@ -15,6 +15,7 @@ import Button from "src/components/Button";
 const lock = new AsyncLock();
 const LOCK_KEY = 'model-query';
 
+const KEY_TEXT_COLOR_LIGHT = "#F97316";
 // const NUMBER_TEXT_COLOR_DARK = "#4F46E5";
 const NUMBER_TEXT_COLOR_LIGHT = "#3a33a1";
 // const BOOLEAN_TEXT_COLOR_DARK = "#F97316";
@@ -164,11 +165,32 @@ function HomePage() {
         return STRING_TEXT_COLOR_LIGHT;
     }
 
-    const formatDeletingItem = (item: any) => {
-        const newItem = { ...item };
+    function syntaxHighlight(json: any) {
+        const newItem = { ...json };
         newItem.id = newItem.id.split('.').slice(1).join('.');
-        return JSON.stringify(newItem, null, 4);
-    };
+
+        if (typeof json != 'string') {
+            json = JSON.stringify(json, undefined, 4);
+        }
+        json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match: string) {
+            var cls = NUMBER_TEXT_COLOR_LIGHT;
+            if (/^"/.test(match)) {
+                if (/:$/.test(match)) {
+                    cls = KEY_TEXT_COLOR_LIGHT;
+                } else {
+                    cls = STRING_TEXT_COLOR_LIGHT;
+                }
+            } else if (/true|false/.test(match)) {
+                cls = BOOLEAN_TEXT_COLOR_LIGHT;
+            } else if (/null/.test(match)) {
+                cls = NULL_TEXT_COLOR;
+            } else if (/undefined/.test(match)) {
+                cls = UNDEFINED_TEXT_COLOR;
+            }
+            return '<span style="color: ' + cls + ';">' + match + '</span>';
+        });
+    }
 
     return (<>
         <Dialog show={!!deleteItem}>
@@ -183,7 +205,7 @@ function HomePage() {
                 <div className="text-black dark:text-slate-400">Do you sure you want to continue to delete the following item?</div>
                 <div className="h-4"></div>
                 <div className="text-[13px] border border-slate-200 dark:border-slate-900 w-full h-auto p-4 rounded-md dark:bg-slate-800 bg-slate-100">
-                    <pre>{deleteItem && formatDeletingItem(deleteItem)}</pre>
+                    <pre dangerouslySetInnerHTML={{ __html: deleteItem && syntaxHighlight(deleteItem) }}></pre>
                 </div>
                 <div className="h-8"></div>
                 <div className="w-full flex justify-end gap-4">
