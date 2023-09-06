@@ -215,7 +215,7 @@ function HomePage() {
     }
 
     return (<>
-        <Dialog show={!!deleteItem}>
+        <Dialog show={!!deleteItem} onClose={() => setDeleteItem(undefined)}>
             <div className="p-4">
                 <div className="w-full flex justify-between">
                     <div className="font-bold text-red-500">Permanent Delete Alert</div>
