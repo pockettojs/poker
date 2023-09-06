@@ -232,7 +232,7 @@ function HomePage() {
                 <div className="h-8"></div>
                 <div className="w-full flex justify-end gap-4">
                     {
-                        colorScheme === 'light' ? <Button size="sm" type="text" color="black" onClick={() => {
+                        colorScheme === 'light' ? <Button size="sm" type="text" color="slate" onClick={() => {
                             setDeleteItem(undefined);
                         }}>Cancel</Button> : <Button size="sm" type="default" color="slate" onClick={() => {
                             setDeleteItem(undefined);
