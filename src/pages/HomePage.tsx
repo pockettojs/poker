@@ -1,4 +1,5 @@
-import { DatabaseManager } from "pocket";
+import { DatabaseManager, PouchDBConfig, setDefaultDbName, setEnvironment } from "pocket";
+import { setPassword as setEncryptionPassword } from 'src/helpers/encryption';
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Alert from "src/components/Alert";
@@ -8,7 +9,7 @@ import { decrypt } from "src/helpers/encryption";
 import { Collection } from "src/models/Collection";
 import { Connection } from "src/models/Connection";
 import AsyncLock from 'async-lock';
-import { Delete16Filled, Dismiss16Filled } from "@ricons/fluent";
+import { ArrowClockwise12Regular, Delete16Filled, Dismiss16Filled } from "@ricons/fluent";
 import Dialog from "src/components/Dialog";
 import Button from "src/components/Button";
 
@@ -62,6 +63,32 @@ function HomePage() {
             });
     }, []);
 
+    async function establishConnection(connection: Connection) {
+        setEnvironment('browser');
+        const { host, port, username, password, database, name } = connection;
+        const http = host.startsWith('https://') ? 'https://' : 'http://';
+        const hostWithoutProtocol = host.startsWith('http://') ? host.substring(7) : (host.startsWith('https://') ? host.substring(8) : host);
+        const url = `${http}${username}:${password}@${hostWithoutProtocol}${port === '80' ? '' : ':' + port}/${database}`
+        const config = {} as PouchDBConfig;
+        if (username && password) {
+            config.auth = {
+                username,
+                password
+            };
+        }
+        if (name) {
+            config.dbName = name;
+        }
+        if (password) {
+            config.password = password;
+        }
+        config.silentConnect = true;
+        const db = await DatabaseManager.connect(url, config);
+        setEncryptionPassword(password)
+        setDefaultDbName(name);
+        return db;
+    }
+
     useEffect(() => {
         const connection = getConnection();
         if (!connection) {
@@ -69,15 +96,17 @@ function HomePage() {
             return;
         }
         setConnection(connection);
-        const db = DatabaseManager.get(connection.name);
-        setDb(db);
+        establishConnection(connection).then(() => {
+            const db = DatabaseManager.get(connection.name);
+            setDb(db);
 
-        if (!collections) {
-            getCollections(query => query.orderBy('id', 'asc')).then((collections) => {
-                setCollections(collections);
-                setFilteredCollections(collections);
-            });
-        }
+            if (!collections) {
+                getCollections(query => query.orderBy('id', 'asc')).then((collections) => {
+                    setCollections(collections);
+                    setFilteredCollections(collections);
+                });
+            }
+        });
     }, [collections, navigate]);
 
     async function getModels(collection: Collection) {
@@ -268,7 +297,9 @@ function HomePage() {
                 showAlert && alert
             }
             <div className="w-1/6 p-4">
-                <div className="ml-2 mb-4 dark:text-slate-400 font-bold">{connection?.name || ''}</div>
+                <div className="flex">
+                    <div className="ml-2 mb-4 dark:text-slate-400 font-bold truncate w-full">{connection?.name || ''}</div>
+                </div>
                 <input
                     className="w-full h-8 px-4 text-sm rounded-full dark:bg-slate-600 dark:placeholder:text-slate-500 shadow-sm focus:outline-none focus:border-blue-500"
                     placeholder="Search Collection"
@@ -309,6 +340,13 @@ function HomePage() {
                     <div className="absolute">
                         <div className="p-2 pb-8 text-2xl dark:text-slate-400">{currentCollection?.id || ''}</div>
                     </div>
+                    {
+                        filteredResults && <div className="absolute right-4 top-4 w-8 h-8 cursor-pointer">
+                            <ArrowClockwise12Regular onClick={() => {
+                                getModels(currentCollection as Collection);
+                            }} />
+                        </div>
+                    }
                     <div className="overflow-x-auto">
                         <div className="mt-[48px]" style={{
                             height: 'calc(100vh - 48px)',

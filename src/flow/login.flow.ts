@@ -1,10 +1,32 @@
+import { Persistor } from "pocket";
 import { Connection } from "src/models/Connection";
 
 let tempConnection: Connection;
+class ConnectionPersistor extends Persistor {
+}
+
 export function setConnection(connection: Connection) {
     tempConnection = connection;
+    ConnectionPersistor.set({
+        name: connection.name,
+        host: connection.host,
+        port: connection.port,
+        database: connection.database,
+        username: connection.username,
+        password: connection.password,
+    });
 }
 export function getConnection() {
+    const data = ConnectionPersistor.get<any>();
+    if (data) {
+        tempConnection = new Connection();
+        tempConnection.name = data.name;
+        tempConnection.host = data.host;
+        tempConnection.port = data.port;
+        tempConnection.database = data.database;
+        tempConnection.username = data.username;
+        tempConnection.password = data.password;
+    }
     return tempConnection;
 }
 
