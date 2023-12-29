@@ -339,7 +339,10 @@ function HomePage() {
                 }
                 <div className="w-full h-16">
                     <div className="absolute">
-                        <div className="p-2 pb-8 text-2xl dark:text-slate-400">{currentCollection?.id || ''}</div>
+                        <div className="p-2 pb-8 text-2xl dark:text-slate-400">
+                            {currentCollection?.id || ''}
+                            <span className="text-xs">&nbsp;&nbsp;(Row count: {filteredResults ? filteredResults.length : '0'})</span>
+                        </div>
                     </div>
                     {
                         filteredResults && <div className="absolute right-4 top-4 w-8 h-8 cursor-pointer">
@@ -348,9 +351,10 @@ function HomePage() {
                             }} />
                         </div>
                     }
-                    <div className="overflow-x-auto">
-                        <div className="mt-[48px]" style={{
-                            height: 'calc(100vh - 48px)',
+                    <div>
+                        <div className="h-[52px]"></div>
+                        <div className="overflow-x-auto" style={{
+                            height: 'calc(100vh - 80px)',
                         }}>
                             {
                                 filteredResults ? <table>
