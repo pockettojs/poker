@@ -116,6 +116,7 @@ function HomePage() {
         };
         const output = await db.find({
             selector: query,
+            limit: 99999,
         });
         lock.acquire(LOCK_KEY, async (done) => {
             try {
