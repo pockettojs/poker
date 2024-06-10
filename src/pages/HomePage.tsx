@@ -429,7 +429,7 @@ function HomePage() {
                                         <tr>
                                             <th>
                                                 <td>
-                                                    <Edit16Filled className="mt-1 w-4 h-4 text-black dark:text-slate-400 cursor-pointer" onClick={() => {
+                                                    <Edit16Filled className="mt-[-4px] w-4 h-4 text-black dark:text-slate-400 cursor-pointer" onClick={() => {
                                                         setNewFieldName('');
                                                         setAddNewField(true);
                                                     }} />
