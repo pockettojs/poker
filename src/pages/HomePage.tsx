@@ -9,9 +9,10 @@ import { decrypt } from "src/helpers/encryption";
 import { Collection } from "src/models/Collection";
 import { Connection } from "src/models/Connection";
 import AsyncLock from 'async-lock';
-import { ArrowClockwise12Regular, Delete16Filled, Dismiss16Filled } from "@ricons/fluent";
+import { ArrowClockwise12Regular, Delete16Filled, Dismiss16Filled, Edit16Filled } from "@ricons/fluent";
 import Dialog from "src/components/Dialog";
 import Button from "src/components/Button";
+import Input from "src/components/Input";
 
 const lock = new AsyncLock();
 const LOCK_KEY = 'model-query';
@@ -50,6 +51,10 @@ function HomePage() {
 
     // Delete item
     const [deleteItem, setDeleteItem] = useState<any>();
+
+    // Add new field
+    const [addNewField, setAddNewField] = useState<any>();
+    const [newFieldName, setNewFieldName] = useState<string>("");
 
     const navigate = useNavigate();
 
@@ -293,6 +298,60 @@ function HomePage() {
                 </div>
             </div>
         </Dialog>
+        <Dialog show={!!addNewField} onClose={() => setAddNewField(undefined)}>
+            {/* give new field to edit */}
+            <div className="p-4">
+                <div className="w-full flex justify-between">
+                    <div className="font-bold">Add New Field</div>
+                    <Dismiss16Filled className="mt-1 w-4 h-4 text-black dark:text-slate-400 cursor-pointer" onClick={() => {
+                        setAddNewField(undefined);
+                    }} />
+                </div>
+                <div className="h-8"></div>
+                <div>
+                    <Input
+                        placeholder="Field Name"
+                        value={newFieldName}
+                        onChange={(value) => {
+                            setNewFieldName(value);
+                        }}
+                    />
+                </div>
+                <div className="h-8"></div>
+                <div className="w-full flex justify-end gap-4">
+                    {
+                        colorScheme === 'light' ? <Button size="sm" type="text" color="slate" onClick={() => {
+                            setAddNewField(undefined);
+                        }}>Cancel</Button> : <Button size="sm" type="default" color="slate" onClick={() => {
+                            setAddNewField(undefined);
+                        }}>Cancel</Button>
+                    }
+                    <Button size="sm" type="outline" color="blue" onClick={async () => {
+                        await getModels(currentCollection as Collection);
+                        await Promise.all((results as any[]).map(async (item) => {
+                            // add new field per item
+                            item[newFieldName] = 'NEW_FIELD';
+                            item._id = item.id;
+                            item._rev = item.rev;
+                            delete item.id;
+                            delete item.rev;
+                            await db.put(item);
+                            return true;
+                        }));
+
+
+
+                        setAlert(<Alert type="success" message={'Field added successfully'}></Alert>);
+                        setShowAlert(true);
+                        setTimeout(() => {
+                            setAlert(undefined);
+                            setShowAlert(false);
+                        }, 4000);
+
+                    }}>Confirm</Button>
+                </div>
+            </div>
+        </Dialog>
         <div className="w-screen h-screen bg-slate-100 dark:bg-slate-900 flex">
             {
                 showAlert && alert
@@ -368,7 +427,14 @@ function HomePage() {
                                             }
                                         </tr>
                                         <tr>
-                                            <th></th>
+                                            <th>
+                                                <td>
+                                                    <Edit16Filled className="mt-1 w-4 h-4 text-black dark:text-slate-400 cursor-pointer" onClick={() => {
+                                                        setNewFieldName('');
+                                                        setAddNewField(true);
+                                                    }} />
+                                                </td>
+                                            </th>
                                             {
                                                 filteredResults ? attributes.map((key, index) => {
                                                     return <td key={index} className={"pl-1 pb-2 " + getWidth()}>
