@@ -89,14 +89,13 @@ function HomePage() {
         }
         config.silentConnect = true;
         const db = await DatabaseManager.connect(url, config);
-        setEncryptionPassword(password)
+        if (enableEncryption) setEncryptionPassword(password);
         setDefaultDbName(name);
         return db;
     }
 
     useEffect(() => {
         const connection = getConnection();
-        console.log('connection: ', connection);
         if (!connection) {
             navigate('/login');
             return;
@@ -108,7 +107,6 @@ function HomePage() {
 
             if (!collections) {
                 getCollections(query => query.orderBy('id', 'asc')).then((collections) => {
-                    console.log('collections: ', collections);
                     setCollections(collections);
                     setFilteredCollections(collections);
                 });
@@ -125,9 +123,7 @@ function HomePage() {
             selector: query,
             limit: 99999,
         });
-        console.log('db.config: ', db.config);
         const enableEncryption = db.config.password ? true : false;
-        console.log('enableEncryption: ', enableEncryption);
         lock.acquire(LOCK_KEY, async (done) => {
             try {
                 const result = output.docs.map((item: any) => {
@@ -135,10 +131,16 @@ function HomePage() {
                         throw new Error('The database did not encrypted, please check');
                     }
 
-                    const newItem = { id: item._id, rev: item._rev, ...decrypt(item.payload), };
-                    delete newItem.payload;
-                    delete newItem._revisions;
-                    return newItem;
+                    if (enableEncryption) {
+                        item = { id: item._id, rev: item._rev, ...decrypt(item.payload), };
+                        delete item.payload;
+                    } else {
+                        item = { id: item._id, rev: item._rev, ...item, };
+                        delete item._rev;
+                        delete item._id;
+                    }
+                    delete item._revisions;
+                    return item;
                 })
 
                 result.sort((a: any, b: any) => {
@@ -150,7 +152,6 @@ function HomePage() {
                 for (let i = 0; i < result.length; i++) {
                     const item = result[i];
                     const attr = Object.keys(item);
-                    console.log('attr: ', attr);
                     if (i === 0) {
                         currentAttr = attr;
                         setAttributes(currentAttr);
