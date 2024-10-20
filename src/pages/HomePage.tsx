@@ -14,6 +14,7 @@ import Dialog from "src/components/Dialog";
 import Button from "src/components/Button";
 import Input from "src/components/Input";
 import { useRealtime } from "src/hooks/useRealtime";
+import { cn } from "src/utils/cn";
 
 const lock = new AsyncLock();
 const LOCK_KEY = 'model-query';
@@ -72,9 +73,6 @@ function HomePage() {
                     setShowAlert(false);
                 }, 4000);
                 setCurrentRefreshingId(needRefreshId);
-                setTimeout(() => {
-                    setCurrentRefreshingId(undefined);
-                }, 1000);
             });
         }
     }, [needRefreshId]);
@@ -513,98 +511,103 @@ function HomePage() {
                                                     </td>
                                                     {
                                                         attributes.map((key, indexJ) => {
-                                                            return <td key={indexJ} valign="top" className="px-2 pb-2 text-slate-900 text-xs dark:text-slate-400">
-                                                                {
-                                                                    editItem && editItem.id === item.id && editKey === key ? <input
-                                                                        ref={editInputRef}
-                                                                        className="border-2 bottom-slate-500"
-                                                                        value={editItem[key]}
-                                                                        onChange={(e) => {
-                                                                            setEditItem({
-                                                                                ...editItem,
-                                                                                [key]: e.target.value,
-                                                                            });
-                                                                        }}
-                                                                        onKeyDown={(e) => {
-                                                                            if (e.key === 'Enter') {
-                                                                                editInputRef.current?.blur();
-                                                                            }
-                                                                            if (e.key === 'Escape') {
-                                                                                setEditItem(undefined);
-                                                                                setEditKey(undefined);
-                                                                            }
-                                                                        }}
-                                                                        onBlur={async () => {
-                                                                            const value = editItem[key];
-                                                                            if (value === originalValue) {
-                                                                                setEditItem(undefined);
-                                                                                setEditKey(undefined);
+                                                            return <td key={indexJ} valign="top" className={cn(
+                                                                "px-2 text-slate-900 text-xs dark:text-slate-400",
+                                                                currentRefreshingId === item.id && "bg-green-100",
+                                                            )}>
+                                                                <div className="pb-1">
+                                                                    {
+                                                                        editItem && editItem.id === item.id && editKey === key ? <input
+                                                                            ref={editInputRef}
+                                                                            className="border-2 bottom-slate-500"
+                                                                            value={editItem[key]}
+                                                                            onChange={(e) => {
+                                                                                setEditItem({
+                                                                                    ...editItem,
+                                                                                    [key]: e.target.value,
+                                                                                });
+                                                                            }}
+                                                                            onKeyDown={(e) => {
+                                                                                if (e.key === 'Enter') {
+                                                                                    editInputRef.current?.blur();
+                                                                                }
+                                                                                if (e.key === 'Escape') {
+                                                                                    setEditItem(undefined);
+                                                                                    setEditKey(undefined);
+                                                                                }
+                                                                            }}
+                                                                            onBlur={async () => {
+                                                                                const value = editItem[key];
+                                                                                if (value === originalValue) {
+                                                                                    setEditItem(undefined);
+                                                                                    setEditKey(undefined);
+                                                                                    setOriginalValue(undefined);
+                                                                                    return;
+                                                                                }
+                                                                                if (!Number.isNaN(Number(value))) {
+                                                                                    editItem[key] = Number(value);
+                                                                                }
+                                                                                if (value === 'true' || value === 'false') {
+                                                                                    editItem[key] = value === 'true';
+                                                                                }
+                                                                                if (value === 'null') {
+                                                                                    editItem[key] = null;
+                                                                                }
+                                                                                if (value === 'undefined') {
+                                                                                    editItem[key] = undefined;
+                                                                                }
+                                                                                editItem._id = editItem.id;
+                                                                                editItem._rev = editItem.rev;
+                                                                                delete editItem.id;
+                                                                                delete editItem.rev;
+                                                                                const originalDoc = await db.get(editItem._id)
+                                                                                const newItem = {
+                                                                                    _id: editItem._id,
+                                                                                    _rev: originalDoc._rev,
+                                                                                    ...editItem,
+                                                                                };
+                                                                                await db.put(newItem).catch((err: any) => {
+                                                                                    setAlert(<Alert type="error" message={err.message}></Alert>);
+                                                                                    setShowAlert(true);
+                                                                                    setTimeout(() => {
+                                                                                        setAlert(undefined);
+                                                                                        setShowAlert(false);
+                                                                                    }, 4000);
+                                                                                });
                                                                                 setOriginalValue(undefined);
-                                                                                return;
-                                                                            }
-                                                                            if (!Number.isNaN(Number(value))) {
-                                                                                editItem[key] = Number(value);
-                                                                            }
-                                                                            if (value === 'true' || value === 'false') {
-                                                                                editItem[key] = value === 'true';
-                                                                            }
-                                                                            if (value === 'null') {
-                                                                                editItem[key] = null;
-                                                                            }
-                                                                            if (value === 'undefined') {
-                                                                                editItem[key] = undefined;
-                                                                            }
-                                                                            editItem._id = editItem.id;
-                                                                            editItem._rev = editItem.rev;
-                                                                            delete editItem.id;
-                                                                            delete editItem.rev;
-                                                                            const originalDoc = await db.get(editItem._id)
-                                                                            const newItem = {
-                                                                                _id: editItem._id,
-                                                                                _rev: originalDoc._rev,
-                                                                                ...editItem,
-                                                                            };
-                                                                            await db.put(newItem).catch((err: any) => {
-                                                                                setAlert(<Alert type="error" message={err.message}></Alert>);
+                                                                                await getModels(currentCollection as Collection);
+
+                                                                                setAlert(<Alert type="success" message={'Updated successfully'}></Alert>);
                                                                                 setShowAlert(true);
                                                                                 setTimeout(() => {
                                                                                     setAlert(undefined);
                                                                                     setShowAlert(false);
                                                                                 }, 4000);
-                                                                            });
-                                                                            setOriginalValue(undefined);
-                                                                            await getModels(currentCollection as Collection);
+                                                                            }}
+                                                                        /> : <pre
+                                                                            onClick={() => {
+                                                                                // cannot edit id and rev
+                                                                                if (key === 'id' || key === 'rev') {
+                                                                                    return;
+                                                                                }
+                                                                                if (!editItem || item.id !== editItem?.id) {
+                                                                                    setEditItem(item);
+                                                                                }
+                                                                                setEditKey(key);
+                                                                                setOriginalValue(item[key]);
 
-                                                                            setAlert(<Alert type="success" message={'Updated successfully'}></Alert>);
-                                                                            setShowAlert(true);
-                                                                            setTimeout(() => {
-                                                                                setAlert(undefined);
-                                                                                setShowAlert(false);
-                                                                            }, 4000);
-                                                                        }}
-                                                                    /> : <pre
-                                                                        onClick={() => {
-                                                                            // cannot edit id and rev
-                                                                            if (key === 'id' || key === 'rev') {
-                                                                                return;
-                                                                            }
-                                                                            if (!editItem || item.id !== editItem?.id) {
-                                                                                setEditItem(item);
-                                                                            }
-                                                                            setEditKey(key);
-                                                                            setOriginalValue(item[key]);
-
-                                                                            setTimeout(() => {
-                                                                                editInputRef.current?.focus();
-                                                                            }, 100);
-                                                                        }}
-                                                                        style={{
-                                                                            color: getColor(item[key]),
-                                                                        }}
-                                                                    >
-                                                                        {formatValue(key, item[key])}
-                                                                    </pre>
-                                                                }
+                                                                                setTimeout(() => {
+                                                                                    editInputRef.current?.focus();
+                                                                                }, 100);
+                                                                            }}
+                                                                            style={{
+                                                                                color: getColor(item[key]),
+                                                                            }}
+                                                                        >
+                                                                            {formatValue(key, item[key])}
+                                                                        </pre>
+                                                                    }
+                                                                </div>
                                                             </td>
                                                         })
                                                     }
