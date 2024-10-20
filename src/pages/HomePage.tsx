@@ -1,6 +1,6 @@
 import { DatabaseManager, PouchDBConfig, setDefaultDbName, setEnvironment, setRealtime } from "pocketto";
 import { setPassword as setEncryptionPassword } from 'src/helpers/encryption';
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Alert from "src/components/Alert";
 import { getCollections } from "src/flow/collection.flow";
@@ -60,23 +60,6 @@ function HomePage() {
 
     const navigate = useNavigate();
 
-    const needRefreshId = useRealtime(currentCollection?.id);
-    const [currentRefreshingId, setCurrentRefreshingId] = useState<string>();
-
-    useEffect(() => {
-        if (needRefreshId) {
-            getModels(currentCollection as Collection).then(() => {
-                setAlert(<Alert type="success" message={'Database is updated by user!'}></Alert>);
-                setShowAlert(true);
-                setTimeout(() => {
-                    setAlert(undefined);
-                    setShowAlert(false);
-                }, 4000);
-                setCurrentRefreshingId(needRefreshId);
-            });
-        }
-    }, [needRefreshId]);
-
     useMemo(() => {
         window.matchMedia('(prefers-color-scheme: dark)').matches ? setColorScheme('dark') : setColorScheme('light');
 
@@ -134,7 +117,7 @@ function HomePage() {
         });
     }, [collections, navigate]);
 
-    async function getModels(collection: Collection) {
+    const getModels = useCallback(async (collection: Collection) => {
         const collectionName = collection.id;
         const query = {
             _id: { $regex: `^${collectionName}`, },
@@ -213,8 +196,7 @@ function HomePage() {
                 done(error as Error);
             }
         });
-
-    }
+    }, [db]);
 
     function formatKey(key: string) {
         return key;
@@ -291,6 +273,23 @@ function HomePage() {
             return '<span style="color: ' + cls + ';">' + match + '</span>';
         });
     }
+
+
+    const needRefreshId = useRealtime(currentCollection?.id);
+    const [currentRefreshingId, setCurrentRefreshingId] = useState<string>();
+    useEffect(() => {
+        if (needRefreshId) {
+            getModels(currentCollection as Collection).then(() => {
+                setAlert(<Alert type="success" message={'Database is updated by user!'}></Alert>);
+                setShowAlert(true);
+                setTimeout(() => {
+                    setAlert(undefined);
+                    setShowAlert(false);
+                }, 4000);
+                setCurrentRefreshingId(needRefreshId);
+            });
+        }
+    }, [needRefreshId, currentCollection, getModels]);
 
     return (<>
         <Dialog show={!!deleteItem} onClose={() => setDeleteItem(undefined)}>
