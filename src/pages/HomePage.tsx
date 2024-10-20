@@ -278,7 +278,7 @@ function HomePage() {
     const needRefreshId = useRealtime(currentCollection?.id);
     const [currentRefreshingId, setCurrentRefreshingId] = useState<string>();
     useEffect(() => {
-        if (needRefreshId) {
+        if (needRefreshId && currentCollection) {
             getModels(currentCollection as Collection).then(() => {
                 setAlert(<Alert type="success" message={'Database is updated by user!'}></Alert>);
                 setShowAlert(true);
