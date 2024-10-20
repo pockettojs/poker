@@ -1,4 +1,4 @@
-import { DatabaseManager, PouchDBConfig, setDefaultDbName, setEnvironment } from "pocket";
+import { DatabaseManager, PouchDBConfig, setDefaultDbName, setEnvironment } from "pocketto";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "src/components/Button";
@@ -131,14 +131,10 @@ function LoginPage() {
         if (name) {
             config.dbName = name;
         }
-        console.log('password: ', password);
-        console.log('enableEncryption: ', enableEncryption);
         if (password && enableEncryption) {
             config.password = password;
-            console.log('config.password: ', config.password);
         }
         config.silentConnect = true;
-        console.log('config: ', config);
         const db = await DatabaseManager.connect(url, config);
         if (enableEncryption) {
             setEncryptionPassword(password)

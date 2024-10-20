@@ -1,6 +1,6 @@
-import { Model, PocketModel } from "pocket";
+import { Model, Relational } from "pocketto";
 
-@PocketModel
+@Relational
 export class Connection extends Model {
     static dbName = 'default';
     name!: string;

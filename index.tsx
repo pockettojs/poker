@@ -2,7 +2,7 @@ import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
-import pocket, { setDefaultDbName } from "pocket";
+import pocketto, { setDefaultDbName } from "pockettoto";
 import router from "./router";
 import general from "@nix/general";
 import { GoogleOAuthProvider } from "@react-oauth/google";
@@ -25,7 +25,7 @@ declare const window: Window &
 window.API_HOST = process.env.REACT_APP_API_HOST || "";
 general.api.host.setApiHost(window.API_HOST);
 
-pocket().then(async () => {
+pocketto().then(async () => {
     general.api.host.setNixErrorCallback(async (error) => {
         const ACCESS_TOKEN_EXPIRED = 'Access token expired, please use refresh token to get a new one';
         if (error instanceof AxiosError) {

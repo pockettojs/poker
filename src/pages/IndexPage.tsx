@@ -1,4 +1,4 @@
-import { setEnvironment } from "pocket";
+import { setEnvironment } from "pocketto";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 

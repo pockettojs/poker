@@ -1,4 +1,4 @@
-import { Persistor } from "pocket";
+import { Persistor } from "pocketto";
 import { Connection } from "src/models/Connection";
 
 let tempConnection: Connection;

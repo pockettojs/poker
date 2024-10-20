@@ -1,4 +1,4 @@
-import { DatabaseManager } from "pocket";
+import { DatabaseManager } from "pocketto";
 import { useEffect, useState } from "react";
 import Button from "src/components/Button";
 import Input from "src/components/Input";

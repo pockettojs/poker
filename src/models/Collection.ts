@@ -1,5 +1,5 @@
-import { Model, PocketModel } from "pocket";
+import { Model, Relational } from "pocketto";
 
-@PocketModel
+@Relational
 export class Collection extends Model {
 }

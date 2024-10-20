@@ -1,4 +1,4 @@
-import { DatabaseManager, PouchDBConfig, setDefaultDbName, setEnvironment } from "pocket";
+import { DatabaseManager, PouchDBConfig, setDefaultDbName, setEnvironment } from "pocketto";
 import { setPassword as setEncryptionPassword } from 'src/helpers/encryption';
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
