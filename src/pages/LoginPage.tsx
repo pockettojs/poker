@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "src/components/Button";
 import Input from "src/components/Input";
-import { getConnections, saveConnection, setConnection } from "src/flow/login.flow";
+import { getConnection, getConnections, saveConnection, setConnection } from "src/flow/login.flow";
 import { Connection } from "src/models/Connection";
 import { setPassword as setEncryptionPassword } from 'src/helpers/encryption';
 import Alert from "src/components/Alert";
@@ -15,6 +15,7 @@ function LoginPage() {
     const [database, setDatabase] = useState("")
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
+    const [enableEncryption, setEnableEncryption] = useState(false)
     const [connections, setConnections] = useState<Connection[]>()
 
     const [alert, setAlert] = useState<any>();
@@ -55,7 +56,24 @@ function LoginPage() {
         if (params.password) {
             setPassword(params.password);
         }
+        if (params.enableEncryption) {
+            setEnableEncryption(params.enableEncryption === 'true');
+        }
     }, [connections]);
+
+    useEffect(() => {
+        const connection = getConnection();
+        if (connection) {
+            setName(connection.name)
+            setHost(connection.host)
+            setPort(connection.port)
+            setDatabase(connection.database)
+            if (connection.username) {
+                setUsername(connection.username)
+            }
+            setPassword(connection.password)
+        }
+    }, []);
 
     function checkConnection() {
         if (!name) {
@@ -95,6 +113,7 @@ function LoginPage() {
         connection.database = database
         connection.username = username
         connection.password = password
+        connection.enableEncryption = enableEncryption
         setConnection(connection)
     }
 
@@ -112,12 +131,18 @@ function LoginPage() {
         if (name) {
             config.dbName = name;
         }
-        if (password) {
+        console.log('password: ', password);
+        console.log('enableEncryption: ', enableEncryption);
+        if (password && enableEncryption) {
             config.password = password;
+            console.log('config.password: ', config.password);
         }
         config.silentConnect = true;
+        console.log('config: ', config);
         const db = await DatabaseManager.connect(url, config);
-        setEncryptionPassword(password)
+        if (enableEncryption) {
+            setEncryptionPassword(password)
+        }
         setDefaultDbName(name);
         return db;
     }
@@ -129,12 +154,12 @@ function LoginPage() {
         <div className="w-screen h-screen flex justify-center items-center bg-slate-100 dark:bg-slate-900">
             <div className="w-full sm:w-full md:w-1/2 lg:w-1/3 h-[688px] rounded-lg bg-white dark:bg-slate-800 p-4">
                 <div className="font-bold text-xl text-indigo-600 dark:text-indigo-500">
-                    Poker: Online CouchDB Manager
+                    Poker: Pocketto Client Tools
                 </div>
                 <div className="h-6"></div>
                 <Input
                     size="sm"
-                    label="Name"
+                    label="Nickname"
                     placeholder="home"
                     value={name}
                     onChange={(text) => setName(text)}
@@ -174,11 +199,28 @@ function LoginPage() {
                 <div className="h-4"></div>
                 <Input
                     size="sm"
+                    type="password"
                     label="Password"
                     placeholder="password"
                     value={password}
                     onChange={(text) => setPassword(text)}
                 />
+                <div className="h-4"></div>
+                <div
+                    className="flex flex-row gap-2 w-full"
+                    onClick={() => setEnableEncryption(!enableEncryption)}
+                >
+                    <div>
+                        <input
+                            type="checkbox"
+                            checked={enableEncryption}
+                            onChange={(e) => setEnableEncryption(e.target.checked)}
+                        />
+                    </div>
+                    <label className="mt-0.5 text-sm font-semibold text-slate-500 dark:text-slate-400">
+                        Enable Data Encrypt/Decrypt
+                    </label>
+                </div>
                 <div className="h-4"></div>
                 <div className="font-bold text-indigo-600 dark:text-indigo-500">Favorites</div>
                 <div className="h-2"></div>

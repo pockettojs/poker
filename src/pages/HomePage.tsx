@@ -70,7 +70,7 @@ function HomePage() {
 
     async function establishConnection(connection: Connection) {
         setEnvironment('browser');
-        const { host, port, username, password, database, name } = connection;
+        const { host, port, username, password, database, name, enableEncryption } = connection;
         const http = host.startsWith('https://') ? 'https://' : 'http://';
         const hostWithoutProtocol = host.startsWith('http://') ? host.substring(7) : (host.startsWith('https://') ? host.substring(8) : host);
         const url = `${http}${username}:${password}@${hostWithoutProtocol}${port === '80' ? '' : ':' + port}/${database}`
@@ -84,7 +84,7 @@ function HomePage() {
         if (name) {
             config.dbName = name;
         }
-        if (password) {
+        if (password && enableEncryption) {
             config.password = password;
         }
         config.silentConnect = true;
@@ -96,6 +96,7 @@ function HomePage() {
 
     useEffect(() => {
         const connection = getConnection();
+        console.log('connection: ', connection);
         if (!connection) {
             navigate('/login');
             return;
@@ -107,6 +108,7 @@ function HomePage() {
 
             if (!collections) {
                 getCollections(query => query.orderBy('id', 'asc')).then((collections) => {
+                    console.log('collections: ', collections);
                     setCollections(collections);
                     setFilteredCollections(collections);
                 });
@@ -123,9 +125,16 @@ function HomePage() {
             selector: query,
             limit: 99999,
         });
+        console.log('db.config: ', db.config);
+        const enableEncryption = db.config.password ? true : false;
+        console.log('enableEncryption: ', enableEncryption);
         lock.acquire(LOCK_KEY, async (done) => {
             try {
                 const result = output.docs.map((item: any) => {
+                    if (enableEncryption && !item.payload) {
+                        throw new Error('The database did not encrypted, please check');
+                    }
+
                     const newItem = { id: item._id, rev: item._rev, ...decrypt(item.payload), };
                     delete newItem.payload;
                     delete newItem._revisions;
@@ -164,6 +173,16 @@ function HomePage() {
                 setEditKey(undefined);
                 done();
             } catch (error) {
+                if ((error as Error).message === 'The database did not encrypted, please check') {
+                    setAlert(<Alert type="error" message={'The database encryption key is wrong, please check'}></Alert>);
+                    setShowAlert(true);
+                    setTimeout(() => {
+                        setAlert(undefined);
+                        setShowAlert(false);
+                    }, 4000);
+                    done(error as Error);
+                }
+
                 setAlert(<Alert type="error" message={'The database encryption key is wrong, please check'}></Alert>);
                 setShowAlert(true);
                 setTimeout(() => {
