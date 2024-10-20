@@ -59,10 +59,11 @@ function HomePage() {
 
     const navigate = useNavigate();
 
-    const needRefresh = useRealtime(currentCollection?.id);
+    const needRefreshId = useRealtime(currentCollection?.id);
+    const [currentRefreshingId, setCurrentRefreshingId] = useState<string>();
 
     useEffect(() => {
-        if (needRefresh) {
+        if (needRefreshId) {
             getModels(currentCollection as Collection).then(() => {
                 setAlert(<Alert type="success" message={'Database is updated by user!'}></Alert>);
                 setShowAlert(true);
@@ -70,10 +71,13 @@ function HomePage() {
                     setAlert(undefined);
                     setShowAlert(false);
                 }, 4000);
+                setCurrentRefreshingId(needRefreshId);
+                setTimeout(() => {
+                    setCurrentRefreshingId(undefined);
+                }, 1000);
             });
         }
-    }, [needRefresh]);
-
+    }, [needRefreshId]);
 
     useMemo(() => {
         window.matchMedia('(prefers-color-scheme: dark)').matches ? setColorScheme('dark') : setColorScheme('light');

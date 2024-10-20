@@ -2,19 +2,18 @@ import { onDocChange } from "pocketto";
 import { useEffect, useState } from "react";
 
 export function useRealtime(collectionName?: string) {
-    const [needRefresh, setNeedRefresh] = useState(false);
+    const [needRefreshId, setNeedRefreshId] = useState<string>();
 
     useEffect(() => {
         onDocChange((id) => {
-            console.log('id: ', id);
             if (id.startsWith(collectionName || '')) {
-                setNeedRefresh(true);
+                setNeedRefreshId(id);
                 setTimeout(() => {
-                    setNeedRefresh(false);
+                    setNeedRefreshId(undefined);
                 }, 1);
             }
         });
     }, [collectionName]);
 
-    return needRefresh;
+    return needRefreshId;
 }
