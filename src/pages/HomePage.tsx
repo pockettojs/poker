@@ -63,7 +63,14 @@ function HomePage() {
 
     useEffect(() => {
         if (needRefresh) {
-            getModels(currentCollection as Collection);
+            getModels(currentCollection as Collection).then(() => {
+                setAlert(<Alert type="success" message={'Database is updated by user!'}></Alert>);
+                setShowAlert(true);
+                setTimeout(() => {
+                    setAlert(undefined);
+                    setShowAlert(false);
+                }, 4000);
+            });
         }
     }, [needRefresh]);
 

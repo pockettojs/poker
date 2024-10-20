@@ -1,6 +1,6 @@
 type AlertProps = {
     message: string;
-    type?: 'success' | 'error';
+    type?: 'success' | 'error' | 'info' | 'warning';
 };
 
 function Alert({
@@ -19,6 +19,7 @@ function Alert({
                 paddingTop: '12px',
                 height: '48px',
                 minWidth: '20%',
+                position: 'fixed',
             }}
         >
             <div>

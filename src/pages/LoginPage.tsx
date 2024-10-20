@@ -148,7 +148,12 @@ function LoginPage() {
             showAlert && alert
         }
         <div className="w-screen h-screen flex justify-center items-center bg-slate-100 dark:bg-slate-900">
-            <div className="w-full sm:w-full md:w-1/2 lg:w-1/3 h-[688px] rounded-lg bg-white dark:bg-slate-800 p-4">
+            <div
+                className="w-full sm:w-full md:w-1/2 lg:w-1/3 rounded-lg bg-white dark:bg-slate-800 p-4"
+                style={{
+                    height: 'fit-content',
+                }}
+            >
                 <div className="font-bold text-xl text-indigo-600 dark:text-indigo-500">
                     Poker: Pocketto Client Tools
                 </div>
@@ -257,7 +262,7 @@ function LoginPage() {
                 }}>
                     Manage Favorites
                 </div>
-                <div className="h-8"></div>
+                <div className="h-4"></div>
                 <div className="grid grid-cols-3 gap-4">
                     <Button type="outline" color="red" onClick={async () => {
                         if (!checkConnection()) return;
