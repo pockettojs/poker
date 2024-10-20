@@ -1,4 +1,4 @@
-import { DatabaseManager, PouchDBConfig, setDefaultDbName, setEnvironment } from "pocketto";
+import { DatabaseManager, PouchDBConfig, setDefaultDbName, setEnvironment, setRealtime } from "pocketto";
 import { setPassword as setEncryptionPassword } from 'src/helpers/encryption';
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -13,6 +13,7 @@ import { ArrowClockwise12Regular, Delete16Filled, Dismiss16Filled, Edit16Filled 
 import Dialog from "src/components/Dialog";
 import Button from "src/components/Button";
 import Input from "src/components/Input";
+import { useRealtime } from "src/hooks/useRealtime";
 
 const lock = new AsyncLock();
 const LOCK_KEY = 'model-query';
@@ -58,6 +59,15 @@ function HomePage() {
 
     const navigate = useNavigate();
 
+    const needRefresh = useRealtime(currentCollection?.id);
+
+    useEffect(() => {
+        if (needRefresh) {
+            getModels(currentCollection as Collection);
+        }
+    }, [needRefresh]);
+
+
     useMemo(() => {
         window.matchMedia('(prefers-color-scheme: dark)').matches ? setColorScheme('dark') : setColorScheme('light');
 
@@ -91,6 +101,7 @@ function HomePage() {
         const db = await DatabaseManager.connect(url, config);
         if (enableEncryption) setEncryptionPassword(password);
         setDefaultDbName(name);
+        setRealtime(true);
         return db;
     }
 
@@ -106,7 +117,7 @@ function HomePage() {
             setDb(db);
 
             if (!collections) {
-                getCollections(query => query.orderBy('id', 'asc')).then((collections) => {
+                getCollections(query => query.orderBy('createdAt', 'asc')).then((collections) => {
                     setCollections(collections);
                     setFilteredCollections(collections);
                 });
@@ -144,7 +155,7 @@ function HomePage() {
                 })
 
                 result.sort((a: any, b: any) => {
-                    return a.updatedAt > b.updatedAt ? -1 : 1;
+                    return a.createdAt > b.createdAt ? -1 : 1;
                 });
 
                 setAttributes([]);
