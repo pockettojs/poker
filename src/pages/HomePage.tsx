@@ -13,7 +13,7 @@ import { ArrowClockwise12Regular, Delete16Filled, Dismiss16Filled, Edit16Filled 
 import Dialog from "src/components/Dialog";
 import Button from "src/components/Button";
 import Input from "src/components/Input";
-import { useRealtime } from "src/hooks/useRealtime";
+import { useRealtimeListItemChanged } from "src/hooks/useRealtimeListItemChanged";
 import { cn } from "src/utils/cn";
 
 const lock = new AsyncLock();
@@ -275,7 +275,7 @@ function HomePage() {
     }
 
 
-    const needRefreshId = useRealtime(currentCollection?.id);
+    const needRefreshId = useRealtimeListItemChanged(currentCollection?.id);
     const [currentRefreshingId, setCurrentRefreshingId] = useState<string>();
     useEffect(() => {
         if (needRefreshId && currentCollection) {

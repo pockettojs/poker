@@ -1,7 +1,7 @@
 import { onDocChange } from "pocketto";
 import { useEffect, useState } from "react";
 
-export function useRealtime(collectionName?: string) {
+export function useRealtimeListItemChanged(collectionName?: string) {
     const [needRefreshId, setNeedRefreshId] = useState<string>();
 
     useEffect(() => {
