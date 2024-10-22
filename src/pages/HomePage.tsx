@@ -502,7 +502,7 @@ function HomePage() {
                                     <tbody>
                                         {
                                             filteredResults ? filteredResults?.map((item, index) => {
-                                                return <tr key={index}>
+                                                return <tr key={index} className="hover:bg-orange-100">
                                                     <td valign="top">
                                                         <Delete16Filled className="w-4 h-4 text-red-500 cursor-pointer" onClick={() => {
                                                             setDeleteItem(item);

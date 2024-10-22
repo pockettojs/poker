@@ -21,5 +21,8 @@
     "editor.formatOnSave": true,
     "eslint.options": {
         "overrideConfigFile": ".eslintrc.json"
-    }
+    },
+    "cSpell.words": [
+        "pocketto",
+    ]
 }
