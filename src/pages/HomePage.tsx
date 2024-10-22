@@ -130,11 +130,7 @@ function HomePage() {
         lock.acquire(LOCK_KEY, async (done) => {
             try {
                 const result = output.docs.map((item: any) => {
-                    if (enableEncryption && !item.payload) {
-                        throw new Error('The database did not encrypted, please check');
-                    }
-
-                    if (enableEncryption) {
+                    if (enableEncryption || item.payload) {
                         item = { id: item._id, rev: item._rev, ...decrypt(item.payload), };
                         delete item.payload;
                     } else {
