@@ -72,7 +72,7 @@ function HomePage() {
 
     async function establishConnection(connection: Connection) {
         setEnvironment('browser');
-        const { host, port, username, password, database, name, enableEncryption } = connection;
+        const { host, port, username, password, database, name, enableEncryption, encryptionPassword } = connection;
         const http = host.startsWith('https://') ? 'https://' : 'http://';
         const hostWithoutProtocol = host.startsWith('http://') ? host.substring(7) : (host.startsWith('https://') ? host.substring(8) : host);
         const url = `${http}${username}:${password}@${hostWithoutProtocol}${port === '80' ? '' : ':' + port}/${database}`
@@ -86,12 +86,12 @@ function HomePage() {
         if (name) {
             config.dbName = name;
         }
-        if (password && enableEncryption) {
-            config.password = password;
+        if (password && encryptionPassword) {
+            config.encryptionPassword = encryptionPassword;
         }
         config.silentConnect = true;
         const db = await DatabaseManager.connect(url, config);
-        if (enableEncryption) setEncryptionPassword(password);
+        if (encryptionPassword) setEncryptionPassword(encryptionPassword);
         setDefaultDbName(name);
         setRealtime(true);
         return db;
@@ -99,6 +99,7 @@ function HomePage() {
 
     useEffect(() => {
         const connection = getConnection();
+        console.log('connection: ', connection);
         if (!connection) {
             navigate('/login');
             return;
@@ -126,11 +127,11 @@ function HomePage() {
             selector: query,
             limit: 99999,
         });
-        const enableEncryption = db.config.password ? true : false;
+        const enableEncryption = !!db.config.encryptionPassword;
         lock.acquire(LOCK_KEY, async (done) => {
             try {
                 const result = output.docs.map((item: any) => {
-                    if (enableEncryption || item.payload) {
+                    if (enableEncryption) {
                         item = { id: item._id, rev: item._rev, ...decrypt(item.payload), };
                         delete item.payload;
                     } else {

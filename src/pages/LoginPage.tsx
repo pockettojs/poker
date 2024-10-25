@@ -16,6 +16,7 @@ function LoginPage() {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const [enableEncryption, setEnableEncryption] = useState(false)
+    const [encryptionPassword, setEPassword] = useState("")
     const [connections, setConnections] = useState<Connection[]>()
 
     const [alert, setAlert] = useState<any>();
@@ -59,6 +60,9 @@ function LoginPage() {
         if (params.enableEncryption) {
             setEnableEncryption(params.enableEncryption === 'true');
         }
+        if (params.encryptionPassword) {
+            setEPassword(params.encryptionPassword);
+        }
     }, [connections]);
 
     useEffect(() => {
@@ -72,6 +76,11 @@ function LoginPage() {
                 setUsername(connection.username)
             }
             setPassword(connection.password)
+            setEnableEncryption(connection.enableEncryption)
+            if (connection.encryptionPassword) {
+                setEPassword(connection.encryptionPassword)
+                setEncryptionPassword(connection.encryptionPassword)
+            }
         }
     }, []);
 
@@ -114,6 +123,7 @@ function LoginPage() {
         connection.username = username
         connection.password = password
         connection.enableEncryption = enableEncryption
+        connection.encryptionPassword = encryptionPassword
         setConnection(connection)
     }
 
@@ -131,13 +141,14 @@ function LoginPage() {
         if (name) {
             config.dbName = name;
         }
-        if (password && enableEncryption) {
-            config.password = password;
+        if (encryptionPassword) {
+            config.encryption = true;
+            config.encryptionPassword = encryptionPassword;
         }
         config.silentConnect = true;
         const db = await DatabaseManager.connect(url, config);
         if (enableEncryption) {
-            setEncryptionPassword(password)
+            setEncryptionPassword(encryptionPassword)
         }
         setDefaultDbName(name);
         return db;
@@ -209,19 +220,44 @@ function LoginPage() {
                 <div className="h-4"></div>
                 <div
                     className="flex flex-row gap-2 w-full"
-                    onClick={() => setEnableEncryption(!enableEncryption)}
+                    onClick={() => {
+                        setEnableEncryption(!enableEncryption);
+                        if (!enableEncryption) {
+                            setEPassword('');
+                        }
+                    }}
                 >
                     <div>
                         <input
                             type="checkbox"
                             checked={enableEncryption}
-                            onChange={(e) => setEnableEncryption(e.target.checked)}
+                            onChange={(e) => {
+                                const checked = e.target.checked;
+                                setEnableEncryption(checked);
+                                if (!checked) {
+                                    setEPassword('');
+                                }
+                            }}
                         />
                     </div>
                     <label className="mt-0.5 text-sm font-semibold text-slate-500 dark:text-slate-400">
                         Enable Data Encrypt/Decrypt
+                        Hello
                     </label>
                 </div>
+                {
+                    enableEncryption && <>
+                        <div className="h-4"></div>
+                        <Input
+                            size="sm"
+                            type="password"
+                            label="Encryption Password"
+                            placeholder="Encryption Password"
+                            value={encryptionPassword}
+                            onChange={(text) => setEPassword(text)}
+                        />
+                    </>
+                }
                 <div className="h-4"></div>
                 <div className="font-bold text-indigo-600 dark:text-indigo-500">Favorites</div>
                 <div className="h-2"></div>
@@ -241,6 +277,10 @@ function LoginPage() {
                                             setUsername(connection.username)
                                         }
                                         setPassword(connection.password)
+                                        if (connection.encryptionPassword) {
+                                            setEPassword(connection.encryptionPassword)
+                                            setEncryptionPassword(connection.encryptionPassword)
+                                        }
                                     }}
                                 >
                                     <div className="font-bold text-sm dark:text-white">{connection.name}</div>

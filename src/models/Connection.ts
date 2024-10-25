@@ -10,4 +10,5 @@ export class Connection extends Model {
     username?: string;
     password!: string;
     enableEncryption!: boolean;
+    encryptionPassword?: string;
 }

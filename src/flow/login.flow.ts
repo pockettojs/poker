@@ -15,6 +15,7 @@ export function setConnection(connection: Connection) {
         username: connection.username,
         password: connection.password,
         enableEncryption: connection.enableEncryption,
+        encryptionPassword: connection.encryptionPassword,
     });
 }
 export function getConnection() {
@@ -28,6 +29,7 @@ export function getConnection() {
         tempConnection.username = data.username;
         tempConnection.password = data.password;
         tempConnection.enableEncryption = data.enableEncryption;
+        tempConnection.encryptionPassword = data.encryptionPassword;
     }
     return tempConnection;
 }
